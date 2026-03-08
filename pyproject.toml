@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llcat"
-version = "0.13.14"
+version = "0.13.15"
 description = "/usr/bin/cat for LLMs"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.0"
 license = "MIT"
 authors = [
     {name = "Chris McKenzie", email = "kristopolous@yahoo.com"},
