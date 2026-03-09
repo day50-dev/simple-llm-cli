@@ -398,7 +398,7 @@ https://github.com/day50-dev/llcat""")
                 chunk = json.loads(data)
                 delta = chunk['choices'][0]['delta']
                 content = delta.get('content', '') 
-                reasoning = delta.get('reasoning', '')
+                reasoning = delta.get('reasoning', delta.get('reasoning_content', ''))
                 tool_calls = delta.get('tool_calls', [])
 
                 if len(reasoning.strip()) and not 'think' in SHUTUP:
