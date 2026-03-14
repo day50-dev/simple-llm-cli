@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llcat"
-version = "0.13.16"
+version = "0.13.17"
 description = "/usr/bin/cat for LLMs"
 readme = "README.md"
 requires-python = ">=3.0"
