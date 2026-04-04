@@ -12,6 +12,7 @@
  * see each model capabilities
  * do tool-calls
  * manage context windows
+   
 llcat works through regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
 
 It exists as a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller. 
