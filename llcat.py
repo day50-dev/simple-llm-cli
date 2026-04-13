@@ -137,7 +137,7 @@ def mcp_start(server_config):
 
         if proc.stdout in rlist:
             proc.stdout.readline()
-            break
+        break
 
     return proc, rpc
 
