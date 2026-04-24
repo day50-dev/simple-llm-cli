@@ -8,10 +8,12 @@
 You want to pipe something into or out of a model sitting on a server. 
 
 Existing tools require you to:
- * install some plugins
+ * install plugins
  * pick from a pre-baked provider boutique
- * pick from a list of models which doesn't have yours
+ * pick a list of models which don't update
  * swap around credentials like you're Indiana Jones with a bag of sand
+
+It's wildly inconvenient.
 
 This fixes all that noise.
 
