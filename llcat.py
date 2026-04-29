@@ -17,14 +17,11 @@ def create_content_with_attachments(text_prompt, attachment_list):
         file_data = safeopen(file_path, what='attachment', fmt='bin')
         ext = os.path.splitext(file_path)[1].lower().lstrip('.')
         prefix = "image" if re.match(r'((we|)bm?p|j?p[en]?g)', ext) else "application"
+        b64 = 'data:image/png;base64,' + base64.b64encode(file_data).decode('utf-8')
         
         content.append({
-            'type': 'document' if prefix == "application" else "image",
-            'source': {
-                'type': 'base64',
-                'media_type': f"{prefix}/{ext}",
-                'data': base64.b64encode(file_data).decode('utf-8')
-            }
+            'type': 'image_url', #'document' if prefix == "application" else "image",
+            'image_url': b64
         })
     
     if text_prompt:
@@ -312,7 +309,8 @@ https://github.com/day50-dev/llcat""")
     parser.add_argument('-s',  '--system', help='System prompt')
 
     parser.add_argument('-c',  '--conversation', help='Conversation history file')
-    parser.add_argument('-cr', action='store_true', help="Do not write anything back to the conversation file")
+    parser.add_argument('-sc', '--schema', help='Set a schema to force structured output')
+    parser.add_argument('-cr', '--conversationro', help="Do not write anything back to the conversation file")
     parser.add_argument('-mf', '--mcp_file', help='MCP file to use')
     parser.add_argument('-tf', '--tool_file', help='JSON file with tool definitions')
     parser.add_argument('-tp', '--tool_program', help='Program to execute tool calls')
@@ -385,7 +383,8 @@ https://github.com/day50-dev/llcat""")
         model_info(args, base_url, headers)
 
     # Conversation
-    messages = safeopen(args.conversation, can_create=True) if args.conversation else []
+    convo_file = args.conversationro or args.conversation or None
+    messages = safeopen(convo_file, can_create=True) if convo_file else []
 
     # Tools
     tools = None
@@ -513,7 +512,7 @@ https://github.com/day50-dev/llcat""")
         if len(tool_call_list) == 0:
             break
 
-    if args.conversation and not args.cr:
+    if args.conversation:
         do_append = False
         newline = {'role': 'assistant'}
         #print(newline)
