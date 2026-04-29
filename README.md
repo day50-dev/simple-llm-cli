@@ -315,6 +315,4 @@ options:
 
 We're excited to see what you build.
 
-## Usage
-
 Brought to you by **DA`/50**: Make the future obvious.
