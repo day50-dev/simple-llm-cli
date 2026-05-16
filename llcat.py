@@ -474,6 +474,10 @@ https://github.com/day50-dev/llcat""")
                     break
 
                 delta = chunk['choices'][0]['delta']
+
+                if delta.get('finish_reason') == 'stop':
+                    break
+
                 content = delta.get('content', '') 
                 reasoning = delta.get('reasoning', delta.get('reasoning_content', '')) or ''
                 tool_calls = delta.get('tool_calls', [])
