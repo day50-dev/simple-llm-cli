@@ -246,7 +246,7 @@ def model_info(args, base_url, headers):
             if '*' in args.model and not fnmatch.fnmatch(model.get('id'), args.model):
                 continue
 
-            if args.info or args.model in [model['id'], '*']:
+            if args.info or (args.model in [model['id'], '*'] and len(model['id'])):
                 params = model.get('supported_parameters')
                 if not params:
                     r = safecall(base_url=f'{base_url}/api/show', req={"model":model.get('id')}, headers=headers)
@@ -348,7 +348,11 @@ https://github.com/day50-dev/llcat""")
             lhs = args.server_url
 
         base_url = lhs.rstrip('/').removesuffix('/v1')
-        if "//" not in base_url: base_url = "https://" + base_url
+        if "//" not in base_url: 
+            if 'localhost' in base_url:
+                base_url = "http://" + base_url
+            else:
+                base_url = "https://" + base_url
 
     headers = {'Content-Type': 'application/json'}
     if args.server_key:
