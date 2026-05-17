@@ -282,7 +282,7 @@ def tool_gen(res):
                 data = line[6:]
                 if data == '[DONE]':
                     break
-                yield data
+                yield json.loads(data)
 
 def main():
     global CURLIFY, VERSION, mcp_dict_ref 
@@ -465,18 +465,13 @@ https://github.com/day50-dev/llcat""")
         tool_call_list = []
 
         is_thinking = False
-        for data in tool_gen(r):
+        for chunk in tool_gen(r):
             try:
-                chunk = json.loads(data)
-
                 # nvidia's inference does things in a weird way
-                if len(chunk['choices']) == 0:
+                if len(chunk['choices']) == 0 or chunk['choices'][0]['finish_reason'] == 'stop':
                     break
 
                 delta = chunk['choices'][0]['delta']
-
-                if delta.get('finish_reason') == 'stop':
-                    break
 
                 content = delta.get('content', '') 
                 reasoning = delta.get('reasoning', delta.get('reasoning_content', '')) or ''
