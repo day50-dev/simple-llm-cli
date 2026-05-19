@@ -493,17 +493,18 @@ https://github.com/day50-dev/llcat""")
                     print(content, end='', flush=True)
                     assistant['content'] += content
                 
-                for tc in tool_calls:
-                    idx = tc.get('index', 0)
-                    if idx >= len(tool_call_list):
-                        tool_call_list.append({'id': '', 'type': 'function', 'function': {'name': '', 'arguments': ''}})
-                    
-                    if 'id' in tc:
-                        tool_call_list[idx]['id'] = tc['id']
-                    if 'function' in tc:
-                        for key in ['name','arguments']:
-                            if key in tc['function']:
-                                tool_call_list[idx]['function'][key] += tc['function'][key]
+                if tool_calls:
+                    for tc in tool_calls:
+                        idx = tc.get('index', 0)
+                        if idx >= len(tool_call_list):
+                            tool_call_list.append({'id': '', 'type': 'function', 'function': {'name': '', 'arguments': ''}})
+                        
+                        if 'id' in tc:
+                            tool_call_list[idx]['id'] = tc['id']
+                        if 'function' in tc:
+                            for key in ['name','arguments']:
+                                if key in tc['function']:
+                                    tool_call_list[idx]['function'][key] += tc['function'][key]
 
             except Exception as ex:
                 err_out(what="toolcall", message=traceback.format_exc(), obj=data)
