@@ -462,12 +462,15 @@ https://github.com/day50-dev/llcat""")
     }
 
     while True:
-        r = safecall(f'{base_url}/v1/chat/completions',req,headers)
+        r = safecall(f'{base_url}/v1/chat/completions', req, headers)
         tool_call_list = []
 
         is_thinking = False
         for chunk in tool_gen(r):
             try:
+                if 'choices' not in chunk:
+                    err_out(what="parser", message="Unparsable content", obj=chunk)
+
                 # nvidia's inference does things in a weird way
                 if len(chunk['choices']) == 0 or chunk['choices'][0]['finish_reason'] == 'stop':
                     break
