@@ -309,8 +309,8 @@ https://github.com/day50-dev/llcat""")
     parser.add_argument('-s',  '--system', help='System prompt')
 
     parser.add_argument('-c',  '--conversation', help='Conversation history file (r/w)')
-    parser.add_argument('-sc', '--schema', help='Set a schema to force structured output')
     parser.add_argument('-cr', '--conversationro', help="The readonly conversation input (ro)")
+    parser.add_argument('-sc', '--schema', help='Set a schema to force structured output')
     parser.add_argument('-mf', '--mcp_file', help='MCP file to use')
     parser.add_argument('-tf', '--tool_file', help='JSON file with tool definitions')
     parser.add_argument('-pr', '--proto', help='Protocol to use (ollama, openai, auto)')
@@ -319,6 +319,7 @@ https://github.com/day50-dev/llcat""")
     parser.add_argument('-to', '--timeout', type=int, help='Timeout in seconds for the read')
     parser.add_argument('-a',  '--attach', action='append', help='Attach file(s)')
     parser.add_argument('-bq', '--be_quiet', action='append', help='Make it shutup about things')
+    parser.add_argument('-nt', '--no-think', action="store_true", help='Disable thinking')
     parser.add_argument('-nw', '--no_wrap', action='store_true', help='Do not wrap inputs in <xml-like-syntax>')
     parser.add_argument('--curlify', action='store_true', help="Write curl equivalents of calls to stdout")
     parser.add_argument('--version', action='version', version='%(prog)s ' + VERSION)
@@ -531,6 +532,7 @@ https://github.com/day50-dev/llcat""")
                 'role': 'tool',
                 'name': fname,
                 'tool_call_id': tool_call['id'],
+                'tool_call': tool_call,
                 'content': result
             })
         
