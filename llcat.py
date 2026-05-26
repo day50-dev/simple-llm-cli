@@ -507,7 +507,7 @@ https://github.com/day50-dev/llcat""")
                                     tool_call_list[idx]['function'][key] += tc['function'][key]
 
             except Exception as ex:
-                err_out(what="toolcall", message=traceback.format_exc(), obj=data)
+                err_out(what="toolcall", message=traceback.format_exc(), obj=req)
 
         for tool_call in tool_call_list:
             fname = tool_call['function']['name']
