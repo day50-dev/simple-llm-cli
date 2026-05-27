@@ -8,6 +8,9 @@ VERSION = None
 SHUTUP = []
 CURLIFY = False
 TIMEOUT = None
+SESSION = None
+
+mcp_dict_ref = {}
 
 def create_content_with_attachments(text_prompt, attachment_list):
     import base64, re
@@ -65,13 +68,13 @@ def safeopen(path, what='cli', fmt='json', can_create=False):
         err_out(what=what, message=f"{path} cannot be loaded", obj=traceback.format_exc(), code=126)
 
 def safecall(base_url, req = None, headers = {}, what = "post"):
+    global SESSION
     headers['User-Agent'] = headers['X-Title'] = 'llcat'
     headers['HTTP-Referer'] = 'https://github.com/day50-dev/llcat'
 
     try:
         logging.debug(f"request {req}")
         
-        session = requests.Session()
         req_kwargs = {
             'method': what.upper(),
             'url': base_url,
@@ -81,13 +84,17 @@ def safecall(base_url, req = None, headers = {}, what = "post"):
             req_kwargs['json'] = req
             
         req_obj = requests.Request(**req_kwargs)
-        prepared = session.prepare_request(req_obj)
+        try:
+            prepared = SESSION.prepare_request(req_obj)
+        except:
+            SESSION = requests.Session()
+            prepared = SESSION.prepare_request(req_obj)
 
         if CURLIFY:
             import curlify
             print(curlify.to_curl(prepared), file=sys.stderr)
 
-        r = session.send(prepared, stream=True, timeout=TIMEOUT)
+        r = SESSION.send(prepared, stream=True, timeout=TIMEOUT)
         r.raise_for_status()  
 
     except Exception as e:
@@ -101,7 +108,14 @@ def safecall(base_url, req = None, headers = {}, what = "post"):
             except:
                 obj['response']['payload'] = e.response.text
 
+        if SESSION is not None:
+            try:
+                SESSION.close()
+            except:
+                pass
+
         err_out(what='response', message=str(e), obj=obj)
+
     return r
 
 def mcp_start(server_config):
@@ -182,6 +196,7 @@ def discover_tools(server_config):
     res = mcp_finish(proc)
     if type(res) is str: 
         return res
+
     return res.get('tools')
 
 def call_tool(server_config, tool_name, arguments):
@@ -192,7 +207,6 @@ def call_tool(server_config, tool_name, arguments):
     rpc("tools/call", {"name": tool_name, "arguments": arguments})
     return mcp_finish(proc)
 
-mcp_dict_ref = {}
 def mcp_get_def(path):
     import re
     config = safeopen(path)
@@ -316,7 +330,7 @@ https://github.com/day50-dev/llcat""")
     parser.add_argument('-pr', '--proto', help='Protocol to use (ollama, openai, auto)')
     parser.add_argument('-ps', '--ps', action='store_true', help='Currently running model (if supported)')
     parser.add_argument('-tp', '--tool_program', help='Program to execute tool calls')
-    parser.add_argument('-to', '--timeout', type=int, help='Timeout in seconds for the read')
+    parser.add_argument('-to', '--timeout', type=float, help='Timeout in seconds for the read')
     parser.add_argument('-a',  '--attach', action='append', help='Attach file(s)')
     parser.add_argument('-bq', '--be_quiet', action='append', help='Make it shutup about things')
     parser.add_argument('-nt', '--no-think', action="store_true", help='Disable thinking')
@@ -391,13 +405,10 @@ https://github.com/day50-dev/llcat""")
         prompt = cli_prompt + stdin_prompt
     
     if not args.server_url:
-        if len(prompt) == 0:
-            parser.print_help()
-        else:
-            print(prompt)
+        parser.print_help() if len(prompt) == 0 else print(prompt)
         sys.exit(0)
 
-    if (len(prompt) == 0 and not args.conversation):
+    if len(prompt) == 0 and not args.conversation:
         model_info(args, base_url, headers)
 
     # Conversation
