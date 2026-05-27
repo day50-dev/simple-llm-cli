@@ -461,114 +461,113 @@ https://github.com/day50-dev/llcat""")
         'tool_calls': []
     }
 
-    while True:
-        r = safecall(f'{base_url}/v1/chat/completions', req, headers)
-        tool_call_list = []
-
-        is_thinking = False
-        for chunk in tool_gen(r):
-            try:
-                if 'choices' not in chunk:
-                    err_out(what="parser", message="Unparsable content", obj=chunk)
-
-                # nvidia's inference does things in a weird way
-                if len(chunk['choices']) == 0 or chunk['choices'][0]['finish_reason'] == 'stop':
-                    break
-
-                delta = chunk['choices'][0]['delta']
-
-                content = delta.get('content', '') 
-                reasoning = delta.get('reasoning', delta.get('reasoning_content', '')) or ''
-                tool_calls = delta.get('tool_calls', [])
-
-                if (len(assistant.get('reasoning', '')) > 0 or len(reasoning.strip())) and not 'think' in SHUTUP and reasoning:
-                    if not is_thinking:
-                        print("<think>")
-                        is_thinking = True
-
-                    assistant['reasoning'] += reasoning
-                    print(reasoning, end='', flush=True)
-
-                elif content:
-                    if is_thinking:
-                        print("\n</think>")
-                        is_thinking = False
-
-                    print(content, end='', flush=True)
-                    assistant['content'] += content
-                
-                if tool_calls:
-                    for tc in tool_calls:
-                        idx = tc.get('index', 0)
-                        if idx >= len(tool_call_list):
-                            tool_call_list.append({'id': '', 'type': 'function', 'function': {'name': '', 'arguments': ''}})
-                        
-                        if 'id' in tc:
-                            tool_call_list[idx]['id'] = tc['id']
-                        if 'function' in tc:
-                            for key in ['name','arguments']:
-                                if key in tc['function']:
-                                    tool_call_list[idx]['function'][key] += tc['function'][key]
-
-            except Exception as ex:
-                err_out(what="toolcall", message=traceback.format_exc(), obj=req)
-
-        for tool_call in tool_call_list:
-            fname = tool_call['function']['name']
-            
-            if not set(['toolcall','debug','request']).intersection(SHUTUP):
-                print(json.dumps({'level':'debug', 'class': 'toolcall', 'message': 'request', 'obj': tool_call}), file=sys.stderr)
-            
-            if args.tool_program and '/' not in args.tool_program:
-                args.tool_program = './' + args.tool_program
-
-            if fname not in mcp_dict_ref:
-                err_out(what="toolcall", message=f"{fname} is not a tool")
-
-            config, name = mcp_dict_ref[fname]
-            result = json.dumps( call_tool(config, name, tool_call['function']['arguments']))
-
-            if not set(['toolcall','debug','result']).intersection(SHUTUP):
-                print(json.dumps({'level':'debug', 'class': 'toolcall', 'message': 'result', 'obj': maybejson(result)}), file=sys.stderr)
-            
-            messages.append({
-                'role': 'tool',
-                'name': fname,
-                'tool_call_id': tool_call['id'],
-                'tool_call': tool_call,
-                'content': result
-            })
-        
-        req = {'messages': messages, 'stream': True}
-        if args.model:
-            req['model'] = args.model
-        if tools:
-            req['tools'] = tools
-
-        if len(tool_call_list) == 0:
-            break
-
-    if args.conversation:
-        do_append = False
-        newline = {'role': 'assistant'}
-        #print(newline)
-        for k,v in assistant.items():
-            if len(v):
-                newline[k] = v
-                do_append = True
-
-        if do_append:
-            messages.append(newline)
-            try:
-                with open(args.conversation, 'w') as f:
-                    json.dump(messages, f, indent=2)
-            except Exception as ex:
-                err_out(what="conversation", message=f"{args.conversation} is unwritable", obj=traceback.format_exc(), code=126)
-
-if __name__ == "__main__":
     try:
-        main()
+        while True:
+            r = safecall(f'{base_url}/v1/chat/completions', req, headers)
+            tool_call_list = []
+
+            is_thinking = False
+            for chunk in tool_gen(r):
+                try:
+                    if 'choices' not in chunk:
+                        err_out(what="parser", message="Unparsable content", obj=chunk)
+
+                    # nvidia's inference does things in a weird way
+                    if len(chunk['choices']) == 0 or chunk['choices'][0]['finish_reason'] == 'stop':
+                        break
+
+                    delta = chunk['choices'][0]['delta']
+
+                    content = delta.get('content', '') 
+                    reasoning = delta.get('reasoning', delta.get('reasoning_content', '')) or ''
+                    tool_calls = delta.get('tool_calls', [])
+
+                    if (len(assistant.get('reasoning', '')) > 0 or len(reasoning.strip())) and not 'think' in SHUTUP and reasoning:
+                        if not is_thinking:
+                            print("<think>")
+                            is_thinking = True
+
+                        assistant['reasoning'] += reasoning
+                        print(reasoning, end='', flush=True)
+
+                    elif content:
+                        if is_thinking:
+                            print("\n</think>")
+                            is_thinking = False
+
+                        print(content, end='', flush=True)
+                        assistant['content'] += content
+                    
+                    if tool_calls:
+                        for tc in tool_calls:
+                            idx = tc.get('index', 0)
+                            if idx >= len(tool_call_list):
+                                tool_call_list.append({'id': '', 'type': 'function', 'function': {'name': '', 'arguments': ''}})
+                            
+                            if 'id' in tc:
+                                tool_call_list[idx]['id'] = tc['id']
+                            if 'function' in tc:
+                                for key in ['name','arguments']:
+                                    if key in tc['function']:
+                                        tool_call_list[idx]['function'][key] += tc['function'][key]
+
+                except Exception as ex:
+                    err_out(what="toolcall", message=traceback.format_exc(), obj=req)
+
+            for tool_call in tool_call_list:
+                fname = tool_call['function']['name']
+                
+                if not set(['toolcall','debug','request']).intersection(SHUTUP):
+                    print(json.dumps({'level':'debug', 'class': 'toolcall', 'message': 'request', 'obj': tool_call}), file=sys.stderr)
+                
+                if args.tool_program and '/' not in args.tool_program:
+                    args.tool_program = './' + args.tool_program
+
+                if fname not in mcp_dict_ref:
+                    err_out(what="toolcall", message=f"{fname} is not a tool")
+
+                config, name = mcp_dict_ref[fname]
+                result = json.dumps( call_tool(config, name, tool_call['function']['arguments']))
+
+                if not set(['toolcall','debug','result']).intersection(SHUTUP):
+                    print(json.dumps({'level':'debug', 'class': 'toolcall', 'message': 'result', 'obj': maybejson(result)}), file=sys.stderr)
+                
+                messages.append({
+                    'role': 'tool',
+                    'name': fname,
+                    'tool_call_id': tool_call['id'],
+                    'tool_call': tool_call,
+                    'content': result
+                })
+            
+            req = {'messages': messages, 'stream': True}
+            if args.model:
+                req['model'] = args.model
+            if tools:
+                req['tools'] = tools
+
+            if len(tool_call_list) == 0:
+                break
+
+        if args.conversation:
+            do_append = False
+            newline = {'role': 'assistant'}
+            #print(newline)
+            for k,v in assistant.items():
+                if len(v):
+                    newline[k] = v
+                    do_append = True
+
+            if do_append:
+                messages.append(newline)
+                try:
+                    with open(args.conversation, 'w') as f:
+                        json.dump(messages, f, indent=2)
+                except Exception as ex:
+                    err_out(what="conversation", message=f"{args.conversation} is unwritable", obj=traceback.format_exc(), code=126)
+
     except KeyboardInterrupt as ex:
         err_out(message=f"Keyboard interrupt")
-    #except Exception as ex:
-    #    err_out(message=traceback.format_exc()
+
+if __name__ == "__main__":
+    main()
