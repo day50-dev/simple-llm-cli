@@ -371,7 +371,13 @@ https://github.com/day50-dev/llcat""")
 
     headers = {'Content-Type': 'application/json'}
     if args.server_key:
-        headers['Authorization'] = f'Bearer {args.server_key}'
+        if args.server_key[0] == '@' and os.path.exists(args.server_key[1:]):
+            with open(args.server_key[1:], 'r') as f:
+                server_key = f.read().strip()
+        else:
+            server_key = args.server_key
+
+        headers['Authorization'] = f'Bearer {server_key}'
 
     if args.ps:
         res = safecall(base_url=f'{args.server_url}/api/ps', headers=headers, what="get")
