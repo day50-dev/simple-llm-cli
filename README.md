@@ -30,7 +30,8 @@ It exists as a general-purpose CLI-based OpenAI-compatible `/chat/completions` c
 It is like cURL or cat for LLMs: a stateless, transparent, explicit, low-level, composable tool for scripting and glue.
 
 Conversations, keys, servers and other configurations are explicitly specified each execution as command line arguments. 
-This makes building things with llcat simple and direct.
+
+This makes building things with llcat direct.
 
 There is no caching or state saved between runs. Everything gets surfaced and errors are JSON parsable. There's a `--curlify` option as well. It's also quite fast and permits custom timeouts.
 
@@ -82,7 +83,7 @@ Here's some examples of how to use **llcat** as a building block for many common
 
 ## Example: Transferrable Conversations
 
-Because conversations, models and servers are decoupled, you can easily mix and match them at any time.
+Because conversations, models and servers are decoupled, you can mix and match them at any time.
 
 Here's one conversation, hopping across models and servers.
 
@@ -110,13 +111,13 @@ $ llcat -u http://192.168.1.21:8080 \
         "And what about Japan?"
 ```
 
-Since the conversation goes to the filesystem as easily parsable JSON  you can use things like `inotify` or `fuse` and push it off to a vector search backend or modify the context window between calls.
+Since the conversation goes to the filesystem as JSON you can use things like `inotify` or `fuse` and push it off to a vector search backend or modify the context window between calls.
  
 ## Example: Adding State
 
 **llcat's** explicit syntax means lots of things are within reach.
 
-For instance simple wrappers can be made custom to your workflow. 
+For instance wrappers can be made custom to your workflow. 
 
 Here's a way [to store state](https://github.com/day50-dev/llcat/blob/main/examples/state.sh) with environment variables to make invocation more convenient:
 
@@ -134,7 +135,7 @@ $ llc-server http://192.168.1.21:8080
 $ llc "write a diss track where the knapsack problem hates on the towers of hanoi"
 ```
 
-And what's that `llf` at the top? That uses `jq` to pretty print the errors and `streamdown` to pretty print the output along with a simple program to display a spinner while you wait.
+And what's that `llf` at the top? That uses `jq` to pretty print the errors and `streamdown` to pretty print the output along with a program to display a spinner while you wait.
 
 There's no configuration files to parse or implicit states to manage.
 
