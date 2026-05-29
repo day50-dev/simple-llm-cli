@@ -7,6 +7,7 @@ logging.basicConfig(level=(os.environ.get('LOGLEVEL') or 'warning').upper())
 VERSION = None
 SHUTUP = []
 CURLIFY = False
+DRY = False
 TIMEOUT = None
 SESSION = None
 
@@ -93,6 +94,9 @@ def safecall(base_url, req = None, headers = {}, what = "post"):
         if CURLIFY:
             import curlify
             print(curlify.to_curl(prepared), file=sys.stderr)
+
+        if DRY:
+            sys.exit(0)
 
         r = SESSION.send(prepared, stream=True, timeout=TIMEOUT)
         r.raise_for_status()  
@@ -299,7 +303,7 @@ def tool_gen(res):
                 yield json.loads(data)
 
 def main():
-    global CURLIFY, VERSION, mcp_dict_ref 
+    global CURLIFY, VERSION, DRY, mcp_dict_ref 
 
     try:
         VERSION = importlib.metadata.version('llcat')
@@ -317,7 +321,7 @@ https://github.com/day50-dev/llcat""")
 
     # We want to show things in the order of importance
     parser.add_argument('-su', '-u', '--server_url', help='Server URL (e.g., http://::1:8080). Also supports MSA format')
-    parser.add_argument('-sk', '-k', '--server_key', help='Server API key for authorization')
+    parser.add_argument('-sk', '-k', '--server_key', help='Server API key for authorization, precede with @ for file references')
 
     parser.add_argument('-m',  '--model', nargs='?', const='', default='any', help='Model to use (or list models if no value)')
     parser.add_argument('-s',  '--system', help='System prompt')
@@ -336,6 +340,7 @@ https://github.com/day50-dev/llcat""")
     parser.add_argument('-nt', '--no-think', action="store_true", help='Disable thinking')
     parser.add_argument('-nw', '--no_wrap', action='store_true', help='Do not wrap inputs in <xml-like-syntax>')
     parser.add_argument('--curlify', action='store_true', help="Write curl equivalents of calls to stdout")
+    parser.add_argument('--dry', action='store_true', help="Dry run")
     parser.add_argument('--version', action='version', version='%(prog)s ' + VERSION)
     parser.add_argument('--info', nargs='?', const='caps', help='Get the info for a model')
     parser.add_argument('user_prompt', nargs='*', help='Your prompt')
@@ -343,6 +348,9 @@ https://github.com/day50-dev/llcat""")
 
     if args.curlify:
         CURLIFY = True
+
+    if args.dry:
+        DRY = True
 
     if args.be_quiet:
         global SHUTUP

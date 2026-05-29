@@ -91,15 +91,15 @@ Start a chat with Deepseek:
 $ llcat -u https://openrouter.ai/api \
         -m deepseek/deepseek-r1-0528:free \
         -c /tmp/convo.txt \
-        -sk $(cat openrouter.key) \
+        -sk "$(cat openrouter.key)" \
         "What is the capital of France?"
 ```
 
-Continue it with Qwen using [MAS format](https://day50.dev/mas.html):
+Continue it with Qwen using [MAS format](https://day50.dev/mas.html) and using the `@` syntax for including the key by file:
 ```
 $ llcat -u "https://openrouter.ai/api#m=qwen/qwen3-4b:free"
         -c /tmp/convo.txt \
-        -sk $(cat openrouter.key) \
+        -sk @openrouter.key \
         "And what about Canada?"
 ```
 
@@ -312,7 +312,7 @@ options:
                         Server URL (e.g., http://::1:8080). Also supports MSA
                         format
   -sk, -k, --server_key SERVER_KEY
-                        Server API key for authorization
+                        Server API key for authorization, use @ for inclusion by path
   -m, --model [MODEL]   Model to use (or list models if no value)
   -s, --system SYSTEM   System prompt
   -c, --conversation CONVERSATION
