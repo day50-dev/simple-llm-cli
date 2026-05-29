@@ -23,7 +23,7 @@ This fixes all that noise.
  * do tool-calls
  * manage context windows
    
-llcat works through regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
+`llcat` works through regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
 
 It exists as a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller. 
 
@@ -134,7 +134,7 @@ $ llc-server http://192.168.1.21:8080
 $ llc "write a diss track where the knapsack problem hates on the towers of hanoi"
 ```
 
-And what's that llf at the top? That uses jq to pretty print the errors and streamdown to pretty print the output along with a simple program to display a spinner while you wait.
+And what's that `llf` at the top? That uses `jq` to pretty print the errors and `streamdown` to pretty print the output along with a simple program to display a spinner while you wait.
 
 There's no configuration files to parse or implicit states to manage.
 
