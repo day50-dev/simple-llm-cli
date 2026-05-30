@@ -303,7 +303,7 @@ def tool_gen(res):
                 yield json.loads(data)
 
 def main():
-    global CURLIFY, VERSION, DRY, mcp_dict_ref 
+    global SHUTUP, CURLIFY, VERSION, DRY, TIMEOUT, mcp_dict_ref 
 
     try:
         VERSION = importlib.metadata.version('llcat')
@@ -320,43 +320,38 @@ llcat is /usr/bin/cat for LLMs.
 https://github.com/day50-dev/llcat""")
 
     # We want to show things in the order of importance
-    parser.add_argument('-su', '-u', '--server_url', help='Server URL (e.g., http://::1:8080). Also supports MSA format')
-    parser.add_argument('-sk', '-k', '--server_key', help='Server API key for authorization, precede with @ for file references')
+    parser.add_argument('-su', '-u', '--server_url',        help='server URL (e.g., http://::1:8080). Also supports MSA format')
+    parser.add_argument('-sk', '-k', '--server_key',        help='server API key for authorization, precede with @ for file references')
+    parser.add_argument('-to', '--timeout', type=float,     help='timeout in seconds for the read')
+    parser.add_argument('-pr', '--proto', default='auto',   help='protocol to use (ollama, llama.cpp, openai, auto)')
 
-    parser.add_argument('-m',  '--model', nargs='?', const='', default='any', help='Model to use (or list models if no value)')
-    parser.add_argument('-s',  '--system', help='System prompt')
+    parser.add_argument('-m',  '--model', nargs='?', const='', default='any', help='model to use (or list models if no value)')
+    parser.add_argument('-s',  '--system', help='system prompt')
+    parser.add_argument('-a',  '--attach', action='append', help='attach file(s)')
 
-    parser.add_argument('-c',  '--conversation', help='Conversation history file (r/w)')
-    parser.add_argument('-cr', '--conversationro', help="The readonly conversation input (ro)")
-    parser.add_argument('-sc', '--schema', help='Set a schema to force structured output')
-    parser.add_argument('-mf', '--mcp_file', help='MCP file to use')
-    parser.add_argument('-tf', '--tool_file', help='JSON file with tool definitions')
-    parser.add_argument('-pr', '--proto', help='Protocol to use (ollama, openai, auto)')
-    parser.add_argument('-ps', '--ps', action='store_true', help='Currently running model (if supported)')
-    parser.add_argument('-tp', '--tool_program', help='Program to execute tool calls')
-    parser.add_argument('-to', '--timeout', type=float, help='Timeout in seconds for the read')
-    parser.add_argument('-a',  '--attach', action='append', help='Attach file(s)')
-    parser.add_argument('-bq', '--be_quiet', action='append', help='Make it shutup about things')
-    parser.add_argument('-nt', '--no-think', action="store_true", help='Disable thinking')
-    parser.add_argument('-nw', '--no_wrap', action='store_true', help='Do not wrap inputs in <xml-like-syntax>')
-    parser.add_argument('--curlify', action='store_true', help="Write curl equivalents of calls to stdout")
-    parser.add_argument('--dry', action='store_true', help="Dry run")
-    parser.add_argument('--version', action='version', version='%(prog)s ' + VERSION)
-    parser.add_argument('--info', nargs='?', const='caps', help='Get the info for a model')
-    parser.add_argument('user_prompt', nargs='*', help='Your prompt')
+    parser.add_argument('-c',  '--conversation',    help='conversation history file (r/w)')
+    parser.add_argument('-cr', '--conversationro',  help="the readonly conversation input (ro)")
+
+    parser.add_argument('-sc', '--schema',      help='set a schema to force structured output')
+    parser.add_argument('-mf', '--mcp_file',    help='MCP file to use')
+    parser.add_argument('-tp', '--tool_program', help='program to execute tool calls')
+    parser.add_argument('-tf', '--tool_file',   help='JSON file with tool definitions')
+
+    parser.add_argument('-ps', '--ps',       action='store_true', help='currently running model (if supported)')
+    parser.add_argument('-bq', '--be_quiet', action='append',     help='make it shutup about things')
+    parser.add_argument('-nt', '--no_think', action="store_true", help='disable thinking')
+    parser.add_argument('-nw', '--no_wrap',  action='store_true', help='do not wrap inputs in <xml-like-syntax>')
+    parser.add_argument('--curlify',         action='store_true', help="write curl equivalents of calls to stdout")
+    parser.add_argument('--dry',             action='store_true', help="dry run")
+    parser.add_argument('--version',         action='version', version='%(prog)s ' + VERSION)
+    parser.add_argument('--info', nargs='?', const='caps', help='get the info for a model')
+    parser.add_argument('user_prompt', nargs='*', help='your prompt')
     args = parser.parse_args()
 
-    if args.curlify:
-        CURLIFY = True
-
-    if args.dry:
-        DRY = True
-
-    if args.be_quiet:
-        global SHUTUP
-        SHUTUP = set((','.join(args.be_quiet)).split(','))
-
-    globals()['TIMEOUT'] = args.timeout
+    if args.curlify:  CURLIFY = True
+    if args.dry:      DRY = True
+    if args.be_quiet: SHUTUP = set((','.join(args.be_quiet)).split(','))
+    TIMEOUT = args.timeout
 
     # Server and headers
     if args.server_url:
@@ -461,6 +456,35 @@ https://github.com/day50-dev/llcat""")
         'messages': messages, 
         'stream': True
     }
+
+    if args.no_think:
+        # There's no universal way to do this, let's just hope this doesn't
+        # break anything. *shrug*
+
+        # This is OpenAI's version.
+        # For models > 5, none is supported. Otherwise it's "low". 
+        # Importantly LiteLLM (https://docs.litellm.ai/docs/reasoning_content) uses "low"
+        if args.proto in ('auto', 'openai'):
+            req['reasoning_effort'] = 'low'
+        
+        # OpenRouter does it their own way: https://openrouter.ai/docs/guides/best-practices/reasoning-tokens
+        if args.proto == 'openrouter' or 'openrouter.ai' in args.server_url:
+            req['reasoning'] = {
+                'effort': 'none',
+                'max_tokens': 0,
+                'exclude': True,
+                'enabled': False
+            }
+
+        # as does ollama https://ollama.com/blog/thinking
+        if args.proto in ('auto', 'ollama'):
+            req['think'] = False
+
+        # llama.cpp, vllm, and sglang use this syntax: https://github.com/ggml-org/llama.cpp/issues/20196
+        if args.proto in ('auto', 'llama.cpp', 'vllm', 'sglang'):
+            req['chat_template_kwargs'] = {
+                'enable_thinking': False
+            }
 
     # schema construction
     schema = None
