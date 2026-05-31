@@ -563,6 +563,12 @@ https://github.com/day50-dev/llcat""")
                 except Exception as ex:
                     err_out(what="toolcall", message=traceback.format_exc(), obj=req)
 
+            messages.append({
+                'role': 'assistant',
+                'content': assistant.get('content') or None,
+                'tool_calls': tool_call_list
+            })
+
             for tool_call in tool_call_list:
                 fname = tool_call['function']['name']
                 
@@ -585,7 +591,6 @@ https://github.com/day50-dev/llcat""")
                     'role': 'tool',
                     'name': fname,
                     'tool_call_id': tool_call['id'],
-                    'tool_call': tool_call,
                     'content': result
                 })
             
