@@ -352,6 +352,7 @@ https://github.com/day50-dev/llcat""")
     if args.dry:      DRY = True
     if args.be_quiet: SHUTUP = set((','.join(args.be_quiet)).split(','))
     TIMEOUT = args.timeout
+    base_url = None
 
     # Server and headers
     if args.server_url:
@@ -395,6 +396,9 @@ https://github.com/day50-dev/llcat""")
 
     # Model
     if not args.model:
+        if not base_url:
+            err_out(what="invocation", message="base_url not specified. Cannot continue")
+
         model_info(args, base_url, headers)
 
     # Prompt 
