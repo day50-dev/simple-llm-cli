@@ -291,11 +291,11 @@ There's ways of doing the network transports with this script as well. All you n
 Now it's your turn. 
 
 ```shell
-usage: llcat [-h] [-su SERVER_URL] [-sk SERVER_KEY] [-m [MODEL]]
-             [-s SYSTEM] [-c CONVERSATION] [-sc SCHEMA]
-             [-cr CONVERSATIONRO] [-mf MCP_FILE] [-tf TOOL_FILE]
-             [-pr PROTO] [-ps] [-tp TOOL_PROGRAM] [-to TIMEOUT] [-a ATTACH]
-             [-bq BE_QUIET] [-nw] [--curlify] [--version] [--info [INFO]]
+usage: llcat [-h] [-su SERVER_URL] [-sk SERVER_KEY] [-to TIMEOUT] [-pr PROTO]
+             [-m [MODEL]] [-s SYSTEM] [-a ATTACH] [-c CONVERSATION]
+             [-cr CONVERSATIONRO] [-sc SCHEMA] [-mf MCP_FILE]
+             [-tp TOOL_PROGRAM] [-tf TOOL_FILE] [-ps] [-bq BE_QUIET] [-nt]
+             [-nw] [--curlify] [--dry] [--version] [--info [INFO]]
              [user_prompt ...]
 
 llcat is /usr/bin/cat for LLMs. 
@@ -305,39 +305,42 @@ llcat is /usr/bin/cat for LLMs.
 https://github.com/day50-dev/llcat
 
 positional arguments:
-  user_prompt           Your prompt
+  user_prompt           your prompt
 
 options:
   -h, --help            show this help message and exit
   -su, -u, --server_url SERVER_URL
-                        Server URL (e.g., http://::1:8080). Also supports MSA
+                        server URL (e.g., http://::1:8080). Also supports MSA
                         format
   -sk, -k, --server_key SERVER_KEY
-                        Server API key for authorization, use @ for inclusion by path
-  -m, --model [MODEL]   Model to use (or list models if no value)
-  -s, --system SYSTEM   System prompt
+                        server API key for authorization, precede with @ for
+                        file references
+  -to, --timeout TIMEOUT
+                        timeout in seconds for the read
+  -pr, --proto PROTO    protocol to use (ollama, llama.cpp, openai, auto)
+  -m, --model [MODEL]   model to use (or list models if no value)
+  -s, --system SYSTEM   system prompt
+  -a, --attach ATTACH   attach file(s)
   -c, --conversation CONVERSATION
-                        Conversation history file (r/w)
-  -sc, --schema SCHEMA  Set a schema to force structured output
+                        conversation history file (r/w)
   -cr, --conversationro CONVERSATIONRO
-                        The readonly conversation input (ro)
+                        the readonly conversation input (ro)
+  -sc, --schema SCHEMA  set a schema to force structured output
   -mf, --mcp_file MCP_FILE
                         MCP file to use
+  -tp, --tool_program TOOL_PROGRAM
+                        program to execute tool calls
   -tf, --tool_file TOOL_FILE
                         JSON file with tool definitions
-  -pr, --proto PROTO    Protocol to use (ollama, openai, auto)
-  -ps, --ps             Currently running model (if supported)
-  -tp, --tool_program TOOL_PROGRAM
-                        Program to execute tool calls
-  -to, --timeout TIMEOUT
-                        Timeout in seconds for the read
-  -a, --attach ATTACH   Attach file(s)
+  -ps, --ps             currently running model (if supported)
   -bq, --be_quiet BE_QUIET
-                        Make it shutup about things
-  -nw, --no_wrap        Do not wrap inputs in <xml-like-syntax>
-  --curlify             Write curl equivalents of calls to stdout
+                        make it shutup about things
+  -nt, --no_think       disable thinking
+  -nw, --no_wrap        do not wrap inputs in <xml-like-syntax>
+  --curlify             write curl equivalents of calls to stdout
+  --dry                 dry run
   --version             show program's version number and exit
-  --info [INFO]         Get the info for a model
+  --info [INFO]         get the info for a model
 ```
 
 We're excited to see what you build.
