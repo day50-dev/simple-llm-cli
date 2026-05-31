@@ -35,8 +35,9 @@ dependencies = [
 "Bug Tracker" = "https://github.com/day50-dev/llcat/issues"
 
 [tool.setuptools]
-py-modules = ["llcat"]
+py-modules = ["llcat", "convo_inject"]
 
 [project.scripts]
 llcat = "llcat:main"
+convo-inject = "convo_inject:main"
 
