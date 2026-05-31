@@ -38,19 +38,19 @@ There is no caching or state saved between runs. Everything gets surfaced and er
 ## Very Quick Start
 List the models on [OpenRouter](https://openrouter.ai):
 
-`uvx llcat -u https://openrouter.ai/api -m`
+`uvx llcat -u openrouter.ai/api -m`
 
 What about just the qwen ones?
 
-`uvx llcat -u https://openrouter.ai/api -m '*qwen3*'`
+`uvx llcat -u openrouter.ai/api -m '*qwen3*'`
 
 What about their capabilities in JSON?
 
-`uvx llcat -u https://openrouter.ai/api -m '*qwen3*' --info | jq .`
+`uvx llcat -u openrouter.ai/api -m '*qwen3*' --info | jq .`
 
 Sure. What about a different protocol, say ollama?
 
-`uvx llcat -u http://localhost:11434 -m '*qwen3*' --info | jq .`
+`uvx llcat -u localhost:11434 -m '*qwen3*' --info | jq .`
 
 You might think "That's funny ... it looks the same."
 
