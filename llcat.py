@@ -302,6 +302,67 @@ def tool_gen(res):
                     break
                 yield json.loads(data)
 
+def stringfile(instr):
+    res = instr
+    if instr[0] == '@':
+        if os.path.exists(instr[1:]):
+            with open(instr[1:], 'r') as f:
+                res = f.read().strip()
+        else:
+            logging.warning(f"{instr} specified, it uses file syntax, however the file doesn't exist. Using it as a string.")
+
+    return res
+
+def base_request(args):
+    try:
+        eb = json.loads(stringfile(args.extra_body))
+    except Exception as ex:
+        err_out(what="parsing", message=f"{args.extra_body} is unparsable json: {ex}", code=126)
+
+    req = {
+        'model': args.model,
+        'stream': not args.no_stream,
+        **eb
+    }
+
+    if args.no_think:
+        # There's no universal way to do this, let's just hope this doesn't
+        # break anything. *shrug*
+
+        # This is OpenAI's version.
+        # For models > 5, none is supported. Otherwise it's "low". 
+        # Importantly LiteLLM (https://docs.litellm.ai/docs/reasoning_content) uses "low"
+        if args.proto in ('auto', 'openai'):
+            req['reasoning_effort'] = 'low'
+        
+        # OpenRouter does it their own way: https://openrouter.ai/docs/guides/best-practices/reasoning-tokens
+        if args.proto == 'openrouter' or 'openrouter.ai' in args.server_url:
+            req['reasoning'] = {
+                'effort': 'none',
+                'max_tokens': 0,
+                'exclude': True,
+                'enabled': False
+            }
+
+        # as does ollama https://ollama.com/blog/thinking
+        if args.proto in ('auto', 'ollama'):
+            req['think'] = False
+
+        # llama.cpp, vllm, and sglang use this syntax: https://github.com/ggml-org/llama.cpp/issues/20196
+        if args.proto in ('auto', 'llama.cpp', 'vllm', 'sglang'):
+            req['chat_template_kwargs'] = {
+                'enable_thinking': False
+            }
+
+    # schema construction
+    if args.schema:
+        req['response_format'] = {
+            'type': 'json_schema',
+            'json_schema': stringfile(args.schema)
+        }
+
+    return req
+
 def main():
     global SHUTUP, CURLIFY, VERSION, DRY, TIMEOUT, mcp_dict_ref 
 
@@ -317,22 +378,26 @@ llcat is /usr/bin/cat for LLMs.
 
         🐱 Me-wow! 
 
-https://github.com/day50-dev/llcat""")
+https://github.com/day50-dev/llcat
+
+Options with a [@] prefix can either be strings or paths to a file, curl style, @/like/this.
+""")
 
     # We want to show things in the order of importance
-    parser.add_argument('-su', '-u', '--server_url',        help='server URL (e.g., http://::1:8080). Also supports MSA format')
-    parser.add_argument('-sk', '-k', '--server_key',        help='server API key for authorization, precede with @ for file references')
+    parser.add_argument('-su', '-u', '--server_url',        help='server URL (e.g., http://::1:8080). Also supports MAS format')
+    parser.add_argument('-sk', '-k', '--server_key',        metavar='[@]SERVERKEY', help='server API key for authorization')
     parser.add_argument('-to', '--timeout', type=float,     help='timeout in seconds for the read')
     parser.add_argument('-pr', '--proto', default='auto',   help='protocol to use (ollama, llama.cpp, openai, auto)')
 
     parser.add_argument('-m',  '--model', nargs='?', const='', default='any', help='model to use (or list models if no value)')
-    parser.add_argument('-s',  '--system', help='system prompt')
+    parser.add_argument('-s',  '--system', metavar='[@]SYSTEM', help='system prompt')
     parser.add_argument('-a',  '--attach', action='append', help='attach file(s)')
 
     parser.add_argument('-c',  '--conversation',    help='conversation history file (r/w)')
     parser.add_argument('-cr', '--conversationro',  help="the readonly conversation input (ro)")
 
-    parser.add_argument('-sc', '--schema',      help='set a schema to force structured output')
+    parser.add_argument('-eb', '--extra_body',  metavar='[@]EXTRABODY', default='{}', help='JSON to add to the body, such as max_tokens or temperature')
+    parser.add_argument('-sc', '--schema',      metavar='[@]SCHEMA', help='set a schema to force structured output')
     parser.add_argument('-mf', '--mcp_file',    help='MCP file to use')
     parser.add_argument('-tp', '--tool_program', help='program to execute tool calls')
     parser.add_argument('-tf', '--tool_file',   help='JSON file with tool definitions')
@@ -374,15 +439,13 @@ https://github.com/day50-dev/llcat""")
             else:
                 base_url = "https://" + base_url
 
-    headers = {'Content-Type': 'application/json'}
-    if args.server_key:
-        if args.server_key[0] == '@' and os.path.exists(args.server_key[1:]):
-            with open(args.server_key[1:], 'r') as f:
-                server_key = f.read().strip()
-        else:
-            server_key = args.server_key
+    headers = {
+        'Accept': 'text/event-stream' if not args.no_stream else 'application/json',
+        'Content-Type': 'application/json'
+    }
 
-        headers['Authorization'] = f'Bearer {server_key}'
+    if args.server_key:
+        headers['Authorization'] = f'Bearer {stringfile(args.server_key)}'
 
     if args.ps:
         res = safecall(base_url=f'{args.server_url}/api/ps', headers=headers, what="get")
@@ -446,64 +509,18 @@ https://github.com/day50-dev/llcat""")
 
     # System Prompt
     if args.system:
+        payload = {'role': 'system', 'content': stringfile(args.system)}
         if len(messages) > 0: 
             if messages[0].get('role') != 'system':
                 messages.insert(0, {})
-            messages[0] = {'role': 'system', 'content': args.system}
+            messages[0] = payload
         else:
-            messages.append({'role': 'system', 'content': args.system})
+            messages.append(payload)
 
     messages.append({'role': 'user', 'content': message_content})
 
-    # Request construction
-    req = {
-        'model': args.model,
-        'messages': messages, 
-        'stream': not args.no_stream
-    }
-
-    if args.no_think:
-        # There's no universal way to do this, let's just hope this doesn't
-        # break anything. *shrug*
-
-        # This is OpenAI's version.
-        # For models > 5, none is supported. Otherwise it's "low". 
-        # Importantly LiteLLM (https://docs.litellm.ai/docs/reasoning_content) uses "low"
-        if args.proto in ('auto', 'openai'):
-            req['reasoning_effort'] = 'low'
-        
-        # OpenRouter does it their own way: https://openrouter.ai/docs/guides/best-practices/reasoning-tokens
-        if args.proto == 'openrouter' or 'openrouter.ai' in args.server_url:
-            req['reasoning'] = {
-                'effort': 'none',
-                'max_tokens': 0,
-                'exclude': True,
-                'enabled': False
-            }
-
-        # as does ollama https://ollama.com/blog/thinking
-        if args.proto in ('auto', 'ollama'):
-            req['think'] = False
-
-        # llama.cpp, vllm, and sglang use this syntax: https://github.com/ggml-org/llama.cpp/issues/20196
-        if args.proto in ('auto', 'llama.cpp', 'vllm', 'sglang'):
-            req['chat_template_kwargs'] = {
-                'enable_thinking': False
-            }
-
-    # schema construction
-    schema = None
-    if args.schema:
-        # see if it's a file or not:
-        if os.path.exists(args.schema):
-            schema = safeopen(args.schema)
-        else:
-            schema = json.loads(args.schema)
-
-        req['response_format'] = {
-            'type': 'json_schema',
-            'json_schema': schema
-        }
+    req = base_request(args)
+    req['messages'] = messages
 
     if tools:
         req['tools'] = tools
@@ -599,9 +616,8 @@ https://github.com/day50-dev/llcat""")
                     'content': result
                 })
             
-            req = {'messages': messages, 'stream': True}
-            if args.model:
-                req['model'] = args.model
+            req = base_request(args)
+            req['messages'] = messages
             if tools:
                 req['tools'] = tools
 
