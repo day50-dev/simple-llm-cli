@@ -340,6 +340,7 @@ https://github.com/day50-dev/llcat""")
     parser.add_argument('-ps', '--ps',       action='store_true', help='currently running model (if supported)')
     parser.add_argument('-bq', '--be_quiet', action='append',     help='make it shutup about things')
     parser.add_argument('-nt', '--no_think', action="store_true", help='disable thinking')
+    parser.add_argument('-ns', '--no_stream',action="store_true", help='disable streaming')
     parser.add_argument('-nw', '--no_wrap',  action='store_true', help='do not wrap inputs in <xml-like-syntax>')
     parser.add_argument('--curlify',         action='store_true', help="write curl equivalents of calls to stdout")
     parser.add_argument('--dry',             action='store_true', help="dry run")
@@ -458,7 +459,7 @@ https://github.com/day50-dev/llcat""")
     req = {
         'model': args.model,
         'messages': messages, 
-        'stream': True
+        'stream': not args.no_stream
     }
 
     if args.no_think:
