@@ -413,7 +413,7 @@ https://github.com/day50-dev/llcat""")
     if (not args.no_wrap) and len(stdin_prompt) and len(cli_prompt):
         prompt = f"<ask>{cli_prompt}</ask><content>{stdin_prompt}</content>"
     else:
-        if len(cli_prompt):
+        if len(cli_prompt) and len(stdin_prompt):
             cli_prompt += "\n"
         prompt = cli_prompt + stdin_prompt
     
@@ -523,7 +523,7 @@ https://github.com/day50-dev/llcat""")
             for chunk in tool_gen(r):
                 try:
                     if 'choices' not in chunk:
-                        err_out(what="parser", message="Unparsable content", obj=chunk)
+                        err_out(what="parser", message="Unparsable content", obj={'req':req, 'res':chunk})
 
                     # nvidia's inference does things in a weird way
                     if len(chunk['choices']) == 0 or chunk['choices'][0]['finish_reason'] == 'stop':
