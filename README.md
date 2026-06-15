@@ -1,7 +1,7 @@
 <p align="center">
 <img width="238" alt="llcat" src="https://github.com/user-attachments/assets/c161862d-8a8e-4753-a6eb-8a3b67f760b0" />
 <br/> <strong>/usr/bin/cat for LLMs</strong>
-<br/><img src=https://img.shields.io/github/license/day50-dev/llcat> <a href=https://pypi.org/project/llcat><img src=https://badge.fury.io/py/llcat.svg/></a>
+<br/> <a href=https://pypi.org/project/llcat><img src=https://badge.fury.io/py/llcat.svg/></a>
 </p>
 <hr>
 
@@ -25,7 +25,7 @@ This fixes all that noise.
    
 `llcat` works through regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
 
-It exists as a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller. 
+It exists as a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller (and also works with Ollama, Openrouter, sglang, llama.cpp ...) 
 
 It is like cURL or cat for LLMs: a stateless, transparent, explicit, low-level, composable tool for scripting and glue.
 
@@ -67,6 +67,7 @@ All the abstraction without those pesky leaks.
  * Pipe things from stdin and/or be prompted on the command line.
  * Do **tool calling** using the OpenAI spec and MCP STDIO servers.
  * List and choose models, system prompts, and add attachments.
+ * Schemas, dry-runs, expressing the calls as raw curls, adding body parameters (such as top_p or temperature), custom timeouts, disabling thinking or streaming, model info...
 
 llcat's basic CLI parameters are also compatible with [Simon Willison's llm](https://github.com/simonw/llm).
 
