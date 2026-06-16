@@ -67,9 +67,11 @@ All the abstraction without those pesky leaks.
  * Pipe things from stdin and/or be prompted on the command line.
  * Do **tool calling** using the OpenAI spec and MCP STDIO servers.
  * List and choose models, system prompts, and add attachments.
- * Schemas, dry-runs, expressing the calls as raw curls, adding body parameters (such as top_p or temperature), custom timeouts, disabling thinking or streaming, model info...
+ * Schemas, dry-runs, expressing the calls as raw curls, adding body parameters (such as top_p or temperature), custom timeouts, customizing thinking or streaming, model info... and much more.
 
 llcat's basic CLI parameters are also compatible with [Simon Willison's llm](https://github.com/simonw/llm).
+
+since conversations are just JSON files this makes context engineering trivial. There's even a tool for sanely manipulating the JSONs included in this repo. 
 
 ## Examples
 
