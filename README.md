@@ -13,7 +13,7 @@ Existing tools require you to:
  * pick a list of models which don't update
  * swap around credentials like you're Indiana Jones with a bag of sand
 
-It's wildly inconvenient. llcat came from the inconsistent patchwork of tools that sacrificed control for convenience and this forfeited functionality.
+llcat is a response to the inconsistent patchwork of tools that sacrifice control for convenience and forfeited functionality.
 
 This fixes all that noise.
 
