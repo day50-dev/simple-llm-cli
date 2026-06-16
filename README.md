@@ -13,14 +13,14 @@ Existing tools require you to:
  * pick a list of models which don't update
  * swap around credentials like you're Indiana Jones with a bag of sand
 
-It's wildly inconvenient.
+It's wildly inconvenient. llcat came from the inconsistent patchwork of tools that sacrificed control for convenience and this forfeited functionality.
 
 This fixes all that noise.
 
 **llcat**, part of the [DAY50](https://day50.dev) suite of open-source tools for AI workflows, allows for targeted precision, focused interaction with models and servers in order to do things like 
  * show a server's models
  * see each model capabilities
- * do tool-calls
+ * do tool-calls, have conversations, change hyperparameters...
  * manage context windows
    
 `llcat` works through regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
