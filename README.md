@@ -15,13 +15,7 @@ Existing tools require you to:
 
 llcat is a response to the inconsistent patchwork of tools that sacrifice control for convenience and forfeit functionality.
 
-This fixes all that noise.
-
-**llcat**, part of the [DAY50](https://day50.dev) suite of open-source tools for AI workflows, allows for targeted precision, focused interaction with models and servers in order to do things like 
- * show a server's models
- * see each model capabilities
- * do tool-calls, have conversations, change hyperparameters...
- * manage context windows
+Part of the [DAY50](https://day50.dev) suite of open-source tools for AI workflows, llcat is for targeted, precise, focused interaction with models and servers.
    
 `llcat` works through regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
 
