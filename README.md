@@ -65,7 +65,7 @@ All the abstraction without those pesky leaks.
 
 llcat's basic CLI parameters are also compatible with [Simon Willison's llm](https://github.com/simonw/llm).
 
-since conversations are just JSON files this makes context engineering trivial. There's even a tool for sanely manipulating the JSONs included in this repo. 
+Since conversations are just JSON files this makes context engineering trivial. There's even an included tool for sanely manipulating the JSONs.
 
 ## Examples
 
