@@ -46,10 +46,6 @@ Sure. What about a different protocol, say ollama?
 
 `uvx llcat -u localhost:11434 -m '*qwen3*' --info | jq .`
 
-You might think "That's funny ... it looks the same."
-
-Correct. Welcome to llcat. 
-
 All the abstraction without those pesky leaks.
 
 ----
