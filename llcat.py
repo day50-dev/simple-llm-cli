@@ -358,7 +358,7 @@ def base_request(args):
     if args.schema:
         req['response_format'] = {
             'type': 'json_schema',
-            'json_schema': stringfile(args.schema)
+            'json_schema': json.loads(stringfile(args.schema))
         }
 
     return req
