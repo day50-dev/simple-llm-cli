@@ -604,7 +604,7 @@ Options with a [@] prefix can either be strings or paths to a file, curl style, 
 
             messages.append({
                 'role': 'assistant',
-                # 'content': assistant.get('content') or json.dumps(tool_call_list),
+                'content': assistant.get('content') or None,
                 'tool_calls': tool_call_list
             })
 
