@@ -243,7 +243,14 @@ def mcp_get_def(path):
         
 def err_out(what="general", message="", obj=None, code=1):
     if not set(['error',what]).intersection(SHUTUP):
-        fulldump={'data': obj, 'level': 'error', 'class': what, 'message': message}
+        obj_json = obj
+        try:
+            if isinstance(obj, str):
+                obj_json = json.dumps(obj)
+        except:
+            obj_json = obj
+        fulldump={'data': obj_json, 'level': 'error', 'class': what, 'message': message, 'tb': traceback.format_exc()}
+
         print(json.dumps(fulldump), file=sys.stderr)
     sys.exit(code)
 
@@ -578,16 +585,26 @@ Options with a [@] prefix can either be strings or paths to a file, curl style, 
                             if 'id' in tc:
                                 tool_call_list[idx]['id'] = tc['id']
                             if 'function' in tc:
-                                for key in ['name','arguments']:
-                                    if key in tc['function']:
-                                        tool_call_list[idx]['function'][key] += tc['function'][key]
+                                for arg in ['name', 'arguments']:
+                                    if arg in tc['function']:
+                                        tool_call_list[idx]['function'][arg] += tc['function'][arg]
 
                 except Exception as ex:
                     err_out(what="toolcall", message=traceback.format_exc(), obj=req)
 
+            for tc in tool_call_list:
+                value = tc['function']['arguments']
+                if isinstance(value, str):
+                    try:
+                        value = json.loads(value)
+                    except json.decoder.JSONDecodeError as ex:
+                        value = tc['function']['arguments']
+
+                tc['function']['arguments'] = value
+
             messages.append({
                 'role': 'assistant',
-                'content': assistant.get('content') or None,
+                # 'content': assistant.get('content') or json.dumps(tool_call_list),
                 'tool_calls': tool_call_list
             })
 
