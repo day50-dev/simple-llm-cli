@@ -9,7 +9,7 @@ You want to test if an inference endpoint is working or want to one-shot call a 
 
 Existing tools require you to pick from a provider boutique and a small list of models then swap around credentials like you're Indiana Jones with a bag of sand.
 
-llcat is a response to the inconsistent patchwork of tools that sacrifice control for convenience and forfeit functionality.
+**llcat** is a response to the inconsistent patchwork of tools that sacrifice control for convenience and forfeit functionality.
 
 For instance, let's say I have a list of authentication tokens in some file, `credentials.txt`:
 
@@ -37,11 +37,11 @@ llcat -k sk-or-v1-ff24...
 You can do the same pattern with models, system prompts, queries, servers... for instance:
 
 ```shell
-llcat -k @$HOME/credentials.txt:12 \
+llcat -k "@$HOME/credentials.txt:12" \
       -u "@settings.json:.[3].host" \
-      -s @system_prompts:8 \
+      -s "@system_prompts:8" \
       -m "@settings.json:.[3].model" \
-         @query:12 > output.txt
+         "@query.txt:12" > output.txt
 ```
 
 **Wait wait wait, is that jq?**
