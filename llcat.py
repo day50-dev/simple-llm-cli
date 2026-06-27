@@ -505,7 +505,11 @@ Options with a [@] prefix can either be strings or paths to a file, curl style, 
     # it will suck stdin. If someone is doing a models query it shouldn't
     # consume the stdin tokens.
     #
-    cli_prompt = ' '.join(args.user_prompt) if args.user_prompt else ''
+    cli_prompt = ''
+    if args.user_prompt:
+        cli_prompt = stringfile(' '.join(args.user_prompt))
+
+
     stdin_prompt = sys.stdin.read() if select.select([sys.stdin], [], [], 0.0)[0] else ''
 
     if (not args.no_wrap) and len(stdin_prompt) and len(cli_prompt):
@@ -671,7 +675,6 @@ Options with a [@] prefix can either be strings or paths to a file, curl style, 
         if args.conversation:
             do_append = False
             newline = {'role': 'assistant'}
-            #print(newline)
             for k,v in assistant.items():
                 if len(v):
                     newline[k] = v
