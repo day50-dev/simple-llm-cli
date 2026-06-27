@@ -34,17 +34,24 @@ llcat -k sk-or-v1-ej24...
 llcat -k sk-or-v1-ff24...
 ```
 
-You can do the same pattern with models, servers, ... for instance:
+You can do the same pattern with models, system prompts, queries, servers... for instance:
 
 ```shell
 llcat -k @$HOME/credentials.txt:12 \
-      -u @servers.txt:4 \
+      -u "@settings.json:.[3].host" \
       -s @system_prompts:8 \
-      -m @model:3 \
+      -m "@settings.json:.[3].model" \
          @query:12 > output.txt
 ```
 
-You're a professional engineer. Use professional tools.
+**Wait wait wait, is that jq?**
+
+Yes! You can use:
+
+    * normal strings (ex: `"abc"`)
+    * files (ex: `@abc.txt`)
+    * files with line numbers (ex: `@abc.txt[1]`)
+    * files with `jq` syntax (ex: `@abc.json:.server[0].url`)
 
 **llcat** is part of the [DAY50](https://day50.dev) suite of open-source tools for AI workflows for targeted, precise, focused interaction with models and servers.
    
