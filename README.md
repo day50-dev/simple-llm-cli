@@ -15,6 +15,8 @@ Existing tools require you to:
 
 llcat is a response to the inconsistent patchwork of tools that sacrifice control for convenience and forfeit functionality.
 
+You're a professional engineer. Use professional tools.
+
 Part of the [DAY50](https://day50.dev) suite of open-source tools for AI workflows, llcat is for targeted, precise, focused interaction with models and servers.
    
 `llcat` works through regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
