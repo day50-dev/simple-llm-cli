@@ -40,7 +40,15 @@ llcat -k sk-or-v1-ej24...
 llcat -k sk-or-v1-ff24...
 ```
 
-You can do the same pattern with models, servers, ... 
+You can do the same pattern with models, servers, ... for instance:
+
+```shell
+llcat -k @$HOME/credentials.txt:12 \
+      -u @servers.txt:4 \
+      -s @system_prompts:8 \
+      -m @model:3 \
+         @query:12 > output.txt
+```
 
 You're a professional engineer. Use professional tools.
 
