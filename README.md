@@ -82,7 +82,9 @@ Sure. What about a different protocol, say ollama?
 
 All the abstraction without those pesky leaks.
 
-There's also support for schemas, dry-runs, expressing the calls as raw curls, adding body parameters (such as top_p or temperature), custom timeouts, and customizing thinking or streaming. The basic CLI parameters are compatible with [Simon Willison's llm](https://github.com/simonw/llm) which makes the transition a drop-in replacement. It's also faster than llm. Time it yourself. You'll see...
+There's also support for schemas, dry-runs, expressing the calls as raw curls, adding body parameters (such as top_p or temperature), custom timeouts, and customizing thinking or streaming. 
+
+The basic CLI parameters are compatible with [Simon Willison's llm](https://github.com/simonw/llm) which makes the transition a drop-in replacement. It's also faster than llm. Time it yourself. You'll see...
 
 There's even an included tool for sanely manipulating the JSONs of the conversations for context engineering.
 
