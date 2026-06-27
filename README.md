@@ -81,20 +81,9 @@ Sure. What about a different protocol, say ollama?
 
 All the abstraction without those pesky leaks.
 
-----
+There's also support for schemas, dry-runs, expressing the calls as raw curls, adding body parameters (such as top_p or temperature), custom timeouts, and customizing thinking or streaming. The basic CLI parameters are compatible with [Simon Willison's llm](https://github.com/simonw/llm) which makes the transition a drop in replacement. It's also much faster.
 
-**llcat** can:
-
- * Use local or remote servers, authenticated or not.
- * Store **conversation history** optionally, as a JSON file. 
- * Pipe things from stdin and/or be prompted on the command line.
- * Do **tool calling** using the OpenAI spec and MCP STDIO servers.
- * List and choose models, system prompts, and add attachments.
- * Schemas, dry-runs, expressing the calls as raw curls, adding body parameters (such as top_p or temperature), custom timeouts, customizing thinking or streaming, model info... and much more.
-
-llcat's basic CLI parameters are also compatible with [Simon Willison's llm](https://github.com/simonw/llm).
-
-Since conversations are just JSON files this makes context engineering trivial. There's even an included tool for sanely manipulating the JSONs.
+There's even an included tool for sanely manipulating the JSONs of the conversations for context engineering.
 
 ## Examples
 
