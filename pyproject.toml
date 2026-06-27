@@ -27,6 +27,7 @@ classifiers = [
 ]
 dependencies = [
     "requests",
+    "jq",
     "curlify"
 ]
 
