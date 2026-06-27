@@ -26,7 +26,7 @@ sk-or-v1-ff24...
 ```
 Here's how you do that with llcat:
 
-``shell
+```shell
 Method 1:
 
 llcat -k @credentials.txt:0
