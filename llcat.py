@@ -336,14 +336,14 @@ def stringfile(instr):
 
     return res
 
-def base_request(args):
+def base_request(args, server):
     try:
         eb = json.loads(stringfile(args.extra_body))
     except Exception as ex:
         err_out(what="parsing", message=f"{args.extra_body} is unparsable json: {ex}", code=126)
 
     req = {
-        'model': args.model,
+        'model': stringfile(args.model),
         'stream': not args.no_stream,
         **eb
     }
@@ -359,7 +359,7 @@ def base_request(args):
             req['reasoning_effort'] = 'low'
         
         # OpenRouter does it their own way: https://openrouter.ai/docs/guides/best-practices/reasoning-tokens
-        if args.proto == 'openrouter' or 'openrouter.ai' in args.server_url:
+        if args.proto == 'openrouter' or 'openrouter.ai' in server:
             req['reasoning'] = {
                 'effort': 'none',
                 'max_tokens': 0,
@@ -445,15 +445,16 @@ Options with a [@] prefix can either be strings or paths to a file, curl style, 
 
     # Server and headers
     if args.server_url:
+        server = stringfile(args.server_url)
 
         # MAS support (https://day50.dev/mas.html)
-        if '#' in args.server_url:
+        if '#' in server:
             from urllib.parse import parse_qs, parse_qsl
-            lhs, rhs = args.server_url.split('#')
+            lhs, rhs = server.split('#')
             params = parse_qs(rhs, keep_blank_values=True)
             args.model = params.get('m')[0]
         else:
-            lhs = args.server_url
+            lhs = server
 
         base_url = lhs.rstrip('/').removesuffix('/v1')
         if "//" not in base_url: 
@@ -471,7 +472,7 @@ Options with a [@] prefix can either be strings or paths to a file, curl style, 
         headers['Authorization'] = f'Bearer {stringfile(args.server_key)}'
 
     if args.ps:
-        res = safecall(base_url=f'{args.server_url}/api/ps', headers=headers, what="get")
+        res = safecall(base_url=f'{server}/api/ps', headers=headers, what="get")
         if res:
             try:
                 res_json = res.json()
@@ -542,7 +543,7 @@ Options with a [@] prefix can either be strings or paths to a file, curl style, 
 
     messages.append({'role': 'user', 'content': message_content})
 
-    req = base_request(args)
+    req = base_request(args, server)
     req['messages'] = messages
 
     if tools:
@@ -649,7 +650,7 @@ Options with a [@] prefix can either be strings or paths to a file, curl style, 
                     'content': result
                 })
             
-            req = base_request(args)
+            req = base_request(args, server)
             req['messages'] = messages
             if tools:
                 req['tools'] = tools

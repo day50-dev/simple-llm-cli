@@ -15,6 +15,33 @@ Existing tools require you to:
 
 llcat is a response to the inconsistent patchwork of tools that sacrifice control for convenience and forfeit functionality.
 
+For instance, let's say I have a list of authentication tokens:
+
+```shell
+credentials.txt
+
+sk-or-v1-e1e5...
+sk-or-v1-ej24...
+sk-or-v1-ff24...
+```
+Here's how you do that with llcat:
+
+``shell
+Method 1:
+
+llcat -k @credentials.txt:0
+llcat -k @credentials.txt:1
+llcat -k @credentials.txt:2
+
+Method 2:
+
+llcat -k sk-or-v1-e1e5...
+llcat -k sk-or-v1-ej24...
+llcat -k sk-or-v1-ff24...
+```
+
+You can do the same pattern with models, servers, ... 
+
 You're a professional engineer. Use professional tools.
 
 Part of the [DAY50](https://day50.dev) suite of open-source tools for AI workflows, llcat is for targeted, precise, focused interaction with models and servers.
@@ -307,7 +334,7 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
-  -su, -u, --server_url SERVER_URL
+  -su, -u, --server_url [@]SERVER_URL
                         server URL (e.g., http://::1:8080). Also supports MAS
                         format
   -sk, -k, --server_key [@]SERVERKEY
@@ -315,7 +342,7 @@ options:
   -to, --timeout TIMEOUT
                         timeout in seconds for the read
   -pr, --proto PROTO    protocol to use (ollama, llama.cpp, openai, auto)
-  -m, --model [MODEL]   model to use (or list models if no value)
+  -m, --model [@][MODEL]   model to use (or list models if no value)
   -s, --system [@]SYSTEM
                         system prompt
   -a, --attach ATTACH   attach file(s)
