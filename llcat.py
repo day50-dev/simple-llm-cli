@@ -413,16 +413,17 @@ llcat is /usr/bin/cat for LLMs.
 
 https://github.com/day50-dev/llcat
 
-Options with a [@] prefix can either be strings or paths to a file, curl style, @/like/this.
+Options with a [@] prefix can either be strings or paths to a file, curl style, @/like/this
+They can also have line numbers @/like/this:0 or jq syntax @/like/this:.[0].field
 """)
 
     # We want to show things in the order of importance
-    parser.add_argument('-su', '-u', '--server_url',        help='server URL (e.g., http://::1:8080). Also supports MAS format')
+    parser.add_argument('-su', '-u', '--server_url',        metavar='[@]SERVERURL', help='server URL (e.g., http://::1:8080). Also supports MAS format')
     parser.add_argument('-sk', '-k', '--server_key',        metavar='[@]SERVERKEY', help='server API key for authorization')
     parser.add_argument('-to', '--timeout', type=float,     help='timeout in seconds for the read')
     parser.add_argument('-pr', '--proto', default='auto',   help='protocol to use (ollama, llama.cpp, openai, auto)')
 
-    parser.add_argument('-m',  '--model', nargs='?', const='', default='any', help='model to use (or list models if no value)')
+    parser.add_argument('-m',  '--model', metavar='[@]MODEL', nargs='?', const='', default='any', help='model to use (or list models if no value)')
     parser.add_argument('-s',  '--system', metavar='[@]SYSTEM', help='system prompt')
     parser.add_argument('-a',  '--attach', action='append', help='attach file(s)')
 
@@ -443,8 +444,9 @@ Options with a [@] prefix can either be strings or paths to a file, curl style, 
     parser.add_argument('--curlify',         action='store_true', help="write curl equivalents of calls to stdout")
     parser.add_argument('--dry',             action='store_true', help="dry run")
     parser.add_argument('--version',         action='version', version='%(prog)s ' + VERSION)
-    parser.add_argument('--info', nargs='?', const='caps', help='get the info for a model')
-    parser.add_argument('user_prompt', nargs='*', help='your prompt')
+    parser.add_argument('--info',            nargs='?', const='caps', help='get the info for a model')
+
+    parser.add_argument('user_prompt',       metavar='[@]user_prompt', nargs='*', help='your prompt')
     args = parser.parse_args()
 
     if args.curlify:  CURLIFY = True

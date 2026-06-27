@@ -317,13 +317,13 @@ There's ways of doing the network transports with this script as well. All you n
 Now it's your turn. 
 
 ```shell
-usage: llcat [-h] [-su SERVER_URL] [-sk [@]SERVERKEY] [-to TIMEOUT]
-             [-pr PROTO] [-m [MODEL]] [-s [@]SYSTEM] [-a ATTACH]
+usage: llcat [-h] [-su [@]SERVER_URL] [-sk [@]SERVERKEY] [-to TIMEOUT]
+             [-pr PROTO] [-m [[@]MODEL]] [-s [@]SYSTEM] [-a ATTACH]
              [-c CONVERSATION] [-cr CONVERSATIONRO] [-eb [@]EXTRABODY]
              [-sc [@]SCHEMA] [-mf MCP_FILE] [-tp TOOL_PROGRAM]
              [-tf TOOL_FILE] [-ps] [-bq BE_QUIET] [-nt] [-ns] [-nw]
              [--curlify] [--dry] [--version] [--info [INFO]]
-             [user_prompt ...]
+             [[@][user_prompt ...]
 
 llcat is /usr/bin/cat for LLMs. 
 
