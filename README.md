@@ -34,7 +34,7 @@ llcat -k sk-or-v1-ej24...
 llcat -k sk-or-v1-ff24...
 ```
 
-You can do the same pattern with models, system prompts, queries, servers... for instance:
+You can do the same pattern with models, system prompts, queries, and servers. For instance:
 
 ```shell
 llcat -k "@$HOME/credentials.txt:12" \
