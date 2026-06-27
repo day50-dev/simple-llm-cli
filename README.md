@@ -5,9 +5,11 @@
 </p>
 <hr>
 
-You want to test if an inference endpoint is working or want to one-shot call a model on a server. Maybe you want to cycle through keys or models or benchmark a bank of IPs. Perhaps you want to orchestrate `N` queries across `M` models running on `P` servers and want to run the job in parallel without leaving any leaky state behind.
+You want to test if an inference endpoint is working or want to one-shot a model on a server. 
 
-Existing tools require you to pick from a provider boutique and a small list of models then swap around credentials like you're Indiana Jones with a bag of sand.
+Maybe you want to cycle through keys or models or benchmark a bank of IPs. Perhaps you want to orchestrate `N` queries across `M` models running on `P` servers and want to run the job in parallel without leaving any leaky state behind.
+
+Existing tools require you to pick from a provider boutique and a small list of models shipped with the software then swap around credentials like you're Indiana Jones with a bag of sand.
 
 **llcat** is a response to the inconsistent patchwork of tools that sacrifice control for convenience and forfeit functionality.
 
