@@ -11,7 +11,15 @@ Maybe you want to cycle through keys or models or benchmark a bank of IPs. Perha
 
 Existing tools require you to pick from a provider boutique and a small list of models shipped with the software then swap around credentials like you're Indiana Jones with a bag of sand.
 
-**llcat** is a response to the inconsistent patchwork of tools that sacrifice control for convenience and forfeit functionality.
+**llcat** is a response to these problems. 
+
+It exists as a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller (and also works with Ollama, OpenRouter, sglang, llama.cpp ...) 
+
+It is like cURL or cat for LLMs: a stateless, transparent, explicit, low-level, composable tool for scripting and glue.
+
+Conversations, keys, servers and other configurations are explicitly specified each execution as command line arguments. 
+
+This makes building things with llcat direct.
 
 For instance, let's say I have a list of authentication tokens in some file, `credentials.txt`:
 
@@ -54,13 +62,7 @@ Yes! You can use normal strings (ex: `"abc"`), files (ex: `@abc.txt`) with line 
    
 **llcat** conversations use regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
 
-It exists as a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller (and also works with Ollama, OpenRouter, sglang, llama.cpp ...) 
 
-It is like cURL or cat for LLMs: a stateless, transparent, explicit, low-level, composable tool for scripting and glue.
-
-Conversations, keys, servers and other configurations are explicitly specified each execution as command line arguments. 
-
-This makes building things with llcat direct.
 
 There is no caching or state saved between runs. Everything gets surfaced and errors are JSON parsable. There's a `--curlify` option as well. 
 
