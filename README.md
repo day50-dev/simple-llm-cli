@@ -46,14 +46,9 @@ llcat -k @$HOME/credentials.txt:12 \
 
 **Wait wait wait, is that jq?**
 
-Yes! You can use:
+Yes! You can use normal strings (ex: `"abc"`), files (ex: `@abc.txt`) with line numbers (ex: `@abc.txt:1`) and even `jq` syntax (ex: `@abc.json:.server[0].url`).
 
-    * normal strings (ex: `"abc"`)
-    * files (ex: `@abc.txt`)
-    * files with line numbers (ex: `@abc.txt[1]`)
-    * files with `jq` syntax (ex: `@abc.json:.server[0].url`)
-
-**llcat** is part of the [DAY50](https://day50.dev) suite of open-source tools for AI workflows for targeted, precise, focused interaction with models and servers.
+**llcat** is part of the [DAY50](https://day50.dev) suite of open-source tools built for a future where AI workloads are split across devices, private servers, and cloud APIs.
    
 `llcat` works through regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
 
