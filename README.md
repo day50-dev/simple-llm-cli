@@ -7,19 +7,13 @@
 
 You want to test if an inference endpoint is working or want to one-shot call a model on a server. Maybe you want to cycle through keys or models or benchmark a bank of IPs. Perhaps you want to orchestrate `N` queries across `M` models running on `P` servers and want to run the job in parallel without leaving any leaky state behind.
 
-Existing tools require you to:
- * install plugins
- * pick from a pre-baked provider boutique
- * pick a list of models which don't update
- * swap around credentials like you're Indiana Jones with a bag of sand
+Existing tools require you to pick from a provider boutique and a small list of models then swap around credentials like you're Indiana Jones with a bag of sand.
 
 llcat is a response to the inconsistent patchwork of tools that sacrifice control for convenience and forfeit functionality.
 
-For instance, let's say I have a list of authentication tokens:
+For instance, let's say I have a list of authentication tokens in some file, `credentials.txt`:
 
 ```shell
-credentials.txt
-
 sk-or-v1-e1e5...
 sk-or-v1-ej24...
 sk-or-v1-ff24...
