@@ -311,11 +311,27 @@ def tool_gen(res):
 
 def stringfile(instr):
     res = instr
+    flag = False
     if instr[0] == '@':
         if os.path.exists(instr[1:]):
             with open(instr[1:], 'r') as f:
                 res = f.read().strip()
+                flag = True
         else:
+            if ':' in instr[1:]:
+                parts = instr[1:].split(':')
+                line = int(parts[-1])
+                file = ':'.join(parts[:-1])
+                if os.path.exists(file):
+                    with open(file, 'r') as f:
+                        res = f.readlines()
+                        if len(res) > line:
+                            res = res[line].strip()
+                            flag = True
+                        else:
+                            err_out('parsing', message=f"{file} is only {len(res)} lines long. Line {line} is inaccessible")
+
+        if not flag:
             logging.warning(f"{instr} specified, it uses file syntax, however the file doesn't exist. Using it as a string.")
 
     return res
