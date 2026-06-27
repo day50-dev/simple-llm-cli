@@ -5,17 +5,15 @@
 </p>
 <hr>
 
-You want to test if an inference endpoint is working or want to one-shot a model on a server. 
+Ever need to test if an inference endpoint is working or want to one-shot a model on a server? 
 
 Maybe you want to cycle through keys or models or benchmark a bank of IPs. Perhaps you want to orchestrate `N` queries across `M` models running on `P` servers and want to run the job in parallel without leaving any leaky state behind.
 
 Existing tools require you to pick from a provider boutique and a small list of models shipped with the software then swap around credentials like you're Indiana Jones with a bag of sand.
 
-**llcat** is a response to these problems. 
+**llcat** is a solution to these problems: a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller (and also works with Ollama, OpenRouter, sglang, llama.cpp and more). It has a rich syntax and supports a sophisticated set of features while keeping simple things easy. 
 
-It exists as a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller (and also works with Ollama, OpenRouter, sglang, llama.cpp ...) 
-
-It is like cURL or cat for LLMs: a stateless, transparent, explicit, low-level, composable tool for scripting and glue.
+Think of it like cURL or cat for LLMs: a stateless, transparent, explicit, low-level, composable tool for scripting and glue.
 
 Conversations, keys, servers and other configurations are explicitly specified each execution as command line arguments. 
 
@@ -30,15 +28,14 @@ sk-or-v1-ff24...
 ```
 Here's how you do that with llcat:
 
-```shell
 Method 1:
-
+```shell
 llcat -k @credentials.txt:0
 llcat -k @credentials.txt:1
 llcat -k @credentials.txt:2
-
+```
 Method 2:
-
+```shell
 llcat -k sk-or-v1-e1e5...
 llcat -k sk-or-v1-ej24...
 llcat -k sk-or-v1-ff24...
@@ -56,13 +53,11 @@ llcat -k "@$HOME/credentials.txt:12" \
 
 **Wait wait wait, is that jq?**
 
-Yes! You can use normal strings (ex: `"abc"`), files (ex: `@abc.txt`) with line numbers (ex: `@abc.txt:1`) and even `jq` syntax (ex: `@abc.json:.server[0].url`).
+Yes! You can use normal strings (ex: `"abc"`), files (ex: `@abc.txt`) with line numbers (ex: `@abc.txt:1`) and even `jq` syntax (ex: `@abc.json:.server[0].url`). This makes parallel distributed execution painless.
 
 **llcat** is part of the [DAY50](https://day50.dev) suite of open-source tools built for a future where AI workloads are split across devices, private servers, and cloud APIs.
    
-**llcat** conversations use regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
-
-
+Conversations use regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
 
 There is no caching or state saved between runs. Everything gets surfaced and errors are JSON parsable. There's a `--curlify` option as well. 
 
