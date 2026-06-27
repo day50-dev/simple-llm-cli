@@ -50,9 +50,9 @@ Yes! You can use normal strings (ex: `"abc"`), files (ex: `@abc.txt`) with line 
 
 **llcat** is part of the [DAY50](https://day50.dev) suite of open-source tools built for a future where AI workloads are split across devices, private servers, and cloud APIs.
    
-`llcat` works through regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
+**llcat** conversations use regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
 
-It exists as a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller (and also works with Ollama, Openrouter, sglang, llama.cpp ...) 
+It exists as a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller (and also works with Ollama, OpenRouter, sglang, llama.cpp ...) 
 
 It is like cURL or cat for LLMs: a stateless, transparent, explicit, low-level, composable tool for scripting and glue.
 
