@@ -4,7 +4,8 @@
 <br/> <a href=https://pypi.org/project/llcat><img src=https://badge.fury.io/py/llcat.svg/></a>
 </p>
 <hr>
-**Note: Human written**
+
+*Note: Human written*
 
 Ever need to test if an inference endpoint is working or want to one-shot a model on a server? 
 
