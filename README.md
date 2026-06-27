@@ -5,7 +5,7 @@
 </p>
 <hr>
 
-You want to pipe something into or out of a model sitting on a server. 
+You want to test if an inference endpoint is working or want to one-shot call a model on a server. Maybe you want to cycle through keys or models or benchmark a bank of IPs. Perhaps you want to orchestrate a N queries across M models running on P servers and want to run the job in parallel without leaving any leaky state behind.
 
 Existing tools require you to:
  * install plugins
