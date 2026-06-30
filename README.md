@@ -5,11 +5,21 @@
 </p>
 <hr>
 
-You want to test if an inference endpoint is working or want to one-shot call a model on a server. Maybe you want to cycle through keys or models or benchmark a bank of IPs. Perhaps you want to orchestrate `N` queries across `M` models running on `P` servers and want to run the job in parallel without leaving any leaky state behind.
+*Note: Human written*
 
-Existing tools require you to pick from a provider boutique and a small list of models then swap around credentials like you're Indiana Jones with a bag of sand.
+Ever need to test if an inference endpoint is working or want to one-shot a model on a server? 
 
-**llcat** is a response to the inconsistent patchwork of tools that sacrifice control for convenience and forfeit functionality.
+Maybe you want to cycle through keys or models or benchmark a bank of IPs. Perhaps you want to orchestrate `N` queries across `M` models running on `P` servers and want to run the job in parallel without leaving any leaky state behind.
+
+Existing tools require you to pick from a provider boutique and a small list of models shipped with the software then swap around credentials like you're Indiana Jones with a bag of sand.
+
+**llcat** is a solution to these problems: a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller (and also works with Ollama, OpenRouter, sglang, llama.cpp and more). It has a rich syntax and supports a sophisticated set of features while keeping simple things easy. 
+
+Think of it like cURL or cat for LLMs: a stateless, transparent, explicit, low-level, composable tool for scripting and glue.
+
+Conversations, keys, servers and other configurations are explicitly specified each execution as command line arguments. 
+
+This makes building things with llcat direct.
 
 For instance, let's say I have a list of authentication tokens in some file, `credentials.txt`:
 
@@ -20,15 +30,14 @@ sk-or-v1-ff24...
 ```
 Here's how you do that with llcat:
 
-```shell
 Method 1:
-
+```shell
 llcat -k @credentials.txt:0
 llcat -k @credentials.txt:1
 llcat -k @credentials.txt:2
-
+```
 Method 2:
-
+```shell
 llcat -k sk-or-v1-e1e5...
 llcat -k sk-or-v1-ej24...
 llcat -k sk-or-v1-ff24...
@@ -46,7 +55,7 @@ llcat -k "@~/credentials.txt:12" \
 
 **Wait wait wait, is that jq?**
 
-Yes! You can use normal strings (ex: `"abc"`), files (ex: `@abc.txt`) with line numbers (ex: `@abc.txt:1`) and even `jq` syntax (ex: `@abc.json:.server[0].url`).
+Yes! You can use normal strings (ex: `"abc"`), files (ex: `@abc.txt`) with line numbers (ex: `@abc.txt:1`) and even `jq` syntax (ex: `@abc.json:.server[0].url`). This makes parallel distributed execution painless.
 
 Here's a pattern you might particularly like:
 
@@ -56,15 +65,7 @@ llcat -k @~/secrets.json:.openrouter
 
 **llcat** is part of the [DAY50](https://day50.dev) suite of open-source tools built for a future where AI workloads are split across devices, private servers, and cloud APIs.
    
-`llcat` works through regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
-
-It exists as a general-purpose CLI-based OpenAI-compatible `/chat/completions` caller (and also works with Ollama, Openrouter, sglang, llama.cpp ...) 
-
-It is like cURL or cat for LLMs: a stateless, transparent, explicit, low-level, composable tool for scripting and glue.
-
-Conversations, keys, servers and other configurations are explicitly specified each execution as command line arguments. 
-
-This makes building things with llcat direct.
+Conversations use regular JSON files through a principle of "least magic" - prioritizing predictability, compatibility, coherency, transparency and functionality.
 
 There is no caching or state saved between runs. Everything gets surfaced and errors are JSON parsable. There's a `--curlify` option as well. 
 
@@ -87,20 +88,11 @@ Sure. What about a different protocol, say ollama?
 
 All the abstraction without those pesky leaks.
 
-----
+There's also support for schemas, dry-runs, expressing the calls as raw curls, adding body parameters (such as top_p or temperature), custom timeouts, and customizing thinking or streaming. 
 
-**llcat** can:
+The basic CLI parameters are compatible with [Simon Willison's llm](https://github.com/simonw/llm) which makes the transition a drop-in replacement. It's also faster than llm. Time it yourself. You'll see...
 
- * Use local or remote servers, authenticated or not.
- * Store **conversation history** optionally, as a JSON file. 
- * Pipe things from stdin and/or be prompted on the command line.
- * Do **tool calling** using the OpenAI spec and MCP STDIO servers.
- * List and choose models, system prompts, and add attachments.
- * Schemas, dry-runs, expressing the calls as raw curls, adding body parameters (such as top_p or temperature), custom timeouts, customizing thinking or streaming, model info... and much more.
-
-llcat's basic CLI parameters are also compatible with [Simon Willison's llm](https://github.com/simonw/llm).
-
-Since conversations are just JSON files this makes context engineering trivial. There's even an included tool for sanely manipulating the JSONs.
+There's even an included tool for sanely manipulating the JSONs of the conversations for context engineering.
 
 ## Examples
 
