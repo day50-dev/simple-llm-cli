@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys, requests, json, argparse, subprocess, select, importlib.metadata, traceback, os, logging
+from pathlib import Path
 
 logging.basicConfig(level=(os.environ.get('LOGLEVEL') or 'warning').upper())
 
@@ -313,8 +314,9 @@ def stringfile(instr):
     flag = False
     isJq = False
     if instr[0] == '@':
-        if os.path.exists(instr[1:]):
-            with open(instr[1:], 'r') as f:
+        maybefile = Path(instr[1:]).expanduser()
+        if os.path.exists(maybefile):
+            with open(maybefile, 'r') as f:
                 res = f.read().strip()
                 flag = True
         else:
@@ -325,7 +327,7 @@ def stringfile(instr):
                     import jq
                     isJq = True
 
-                file = ':'.join(parts[:-1])
+                file = Path(':'.join(parts[:-1])).expanduser()
                 if os.path.exists(file):
                     with open(file, 'r') as f:
                         if isJq:
