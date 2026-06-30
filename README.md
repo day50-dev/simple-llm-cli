@@ -37,7 +37,7 @@ llcat -k sk-or-v1-ff24...
 You can do the same pattern with models, system prompts, queries, and servers. For instance:
 
 ```shell
-llcat -k "@$HOME/credentials.txt:12" \
+llcat -k "@~/credentials.txt:12" \
       -u "@settings.json:.[3].host" \
       -s "@system_prompts:8" \
       -m "@settings.json:.[3].model" \
@@ -51,7 +51,7 @@ Yes! You can use normal strings (ex: `"abc"`), files (ex: `@abc.txt`) with line 
 Here's a pattern you might particularly like:
 
 ```shell
-llcat -k @$HOME/secrets.json:.openrouter
+llcat -k @~/secrets.json:.openrouter
 ```
 
 **llcat** is part of the [DAY50](https://day50.dev) suite of open-source tools built for a future where AI workloads are split across devices, private servers, and cloud APIs.
@@ -124,7 +124,7 @@ Start a chat with Deepseek:
 $ llcat -u https://openrouter.ai/api \
         -m deepseek/deepseek-r1-0528:free \
         -c /tmp/convo.txt \
-        -sk "$(cat openrouter.key)" \
+        -k "$(cat openrouter.key)" \
         "What is the capital of France?"
 ```
 
@@ -132,7 +132,7 @@ Continue it with Qwen using [MAS format](https://day50.dev/mas.html) and using t
 ```
 $ llcat -u "https://openrouter.ai/api#m=qwen/qwen3-4b:free"
         -c /tmp/convo.txt \
-        -sk @openrouter.key \
+        -k @openrouter.key \
         "And what about Canada?"
 ```
 
@@ -155,8 +155,8 @@ Here's a way [to store state](https://github.com/day50-dev/llcat/blob/main/examp
 
 ```shell
 llf()        { llc "$@" 2> >(jq . >&2) | examples/spinner sd }
-llc()        { llcat -m "$LLC_MODEL" -u "$LLC_SERVER" -sk "$LLC_KEY" "$@" }
-llc-model()  { LLC_MODEL=$(llcat -m  -u "$LLC_SERVER" -sk "$LLC_KEY" | fzf) }
+llc()        { llcat -m "$LLC_MODEL" -u "$LLC_SERVER" -k "$LLC_KEY" "$@" }
+llc-model()  { LLC_MODEL=$(llcat -m  -u "$LLC_SERVER" -k "$LLC_KEY" | fzf) }
 llc-server() { LLC_SERVER=$1 }
 llc-key()    { LLC_KEY=$1 }
 ```
