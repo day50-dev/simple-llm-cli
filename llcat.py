@@ -603,6 +603,11 @@ They can also have line numbers @/like/this:0 or jq syntax @/like/this:.[0].fiel
                             break
 
                     if 'message' in chunk['choices'][0]:
+                        # we asked for streaming but it told us to go fuck ourselves
+                        if not args.no_stream:
+                            if not 'stream' in SHUTUP:
+                                print(json.dumps({'level':'warn', 'class': 'stream', 'message': 'Streaming requested. Non-streaming result returned'}), file=sys.stderr)
+
                         content = chunk['choices'][0]['message']['content']
                         tool_calls = []
                         reasoning = ''
