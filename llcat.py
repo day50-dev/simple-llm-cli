@@ -299,15 +299,24 @@ def model_info(args, base_url, headers):
 
 
 def tool_gen(res):
+    isJSON = False
+    data = ''
     for line in res.iter_lines():
         if line:
             line = line.decode('utf-8')
             logging.debug(f"response: {line}")
-            if line.startswith('data: '):
+            if isJSON:
+                data += line
+            elif line.startswith('data: '):
                 data = line[6:]
                 if data == '[DONE]':
                     break
                 yield json.loads(data)
+            elif line.startswith('{'): # this is just a whole json
+                isJSON = True
+                data += line
+    if isJSON:
+        yield json.loads(data)
 
 def stringfile(instr):
     res = instr
@@ -574,6 +583,7 @@ They can also have line numbers @/like/this:0 or jq syntax @/like/this:.[0].fiel
         'tool_calls': []
     }
 
+    stopFlag = False
     try:
         while True:
             r = safecall(f'{base_url}/v1/chat/completions', req, headers)
@@ -586,14 +596,22 @@ They can also have line numbers @/like/this:0 or jq syntax @/like/this:.[0].fiel
                         err_out(what="parser", message="Unparsable content", obj={'req':req, 'res':chunk})
 
                     # nvidia's inference does things in a weird way
-                    if len(chunk['choices']) == 0 or chunk['choices'][0]['finish_reason'] == 'stop':
-                        break
+                    if len(chunk['choices']) == 0 or chunk['choices'][0].get('finish_reason') == 'stop':
+                        if 'message' in chunk['choices'][0]:
+                            stopFlag = True
+                        else:
+                            break
 
-                    delta = chunk['choices'][0]['delta']
+                    if 'message' in chunk['choices'][0]:
+                        content = chunk['choices'][0]['message']['content']
+                        tool_calls = []
+                        reasoning = ''
+                    else:
+                        delta = chunk['choices'][0]['delta']
 
-                    content = delta.get('content', '') 
-                    reasoning = delta.get('reasoning', delta.get('reasoning_content', '')) or ''
-                    tool_calls = delta.get('tool_calls', [])
+                        content = delta.get('content', '') 
+                        reasoning = delta.get('reasoning', delta.get('reasoning_content', '')) or ''
+                        tool_calls = delta.get('tool_calls', [])
 
                     if (len(assistant.get('reasoning', '')) > 0 or len(reasoning.strip())) and not 'think' in SHUTUP and reasoning:
                         if not is_thinking:
@@ -623,6 +641,10 @@ They can also have line numbers @/like/this:0 or jq syntax @/like/this:.[0].fiel
                                 for arg in ['name', 'arguments']:
                                     if arg in tc['function']:
                                         tool_call_list[idx]['function'][arg] += tc['function'][arg]
+
+                    if stopFlag == True:
+                        stopFlag = False
+                        break
 
                 except Exception as ex:
                     err_out(what="toolcall", message=traceback.format_exc(), obj=req)
