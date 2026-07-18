@@ -8,6 +8,7 @@ VERSION = None
 SHUTUP = []
 CURLIFY = False
 DRY = False
+FORCE = False
 TIMEOUT = None
 SESSION = None
 
@@ -75,7 +76,50 @@ def safecall(base_url, req = None, headers = {}, what = "post"):
 
     try:
         logging.debug(f"request {req}")
-        
+
+        if CURLIFY or DRY:
+            req_kwargs = {
+                'method': what.upper(),
+                'url': base_url,
+                'headers': headers,
+            }
+            if what == 'post':
+                req_kwargs['json'] = req
+
+            req_obj = requests.Request(**req_kwargs)
+            try:
+                prepared = SESSION.prepare_request(req_obj)
+            except:
+                SESSION = requests.Session()
+                prepared = SESSION.prepare_request(req_obj)
+
+            if CURLIFY:
+                import curlify
+                print(curlify.to_curl(prepared), file=sys.stderr)
+
+            if DRY:
+                sys.exit(0)
+
+        if FORCE:
+            cmd = ['curl', '-ksSN']
+            for k, v in headers.items():
+                cmd += ['-H', f'{k}: {v}']
+            if what == 'post' and req is not None:
+                cmd += ['-d', json.dumps(req)]
+            cmd.append(base_url)
+
+            logging.debug(f"curl command: {' '.join(cmd)}")
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+            class CurlResponse:
+                def __init__(self, proc):
+                    self.proc = proc
+                def iter_lines(self):
+                    for line in self.proc.stdout:
+                        yield line.rstrip(b'\n')
+
+            return CurlResponse(proc)
+
         req_kwargs = {
             'method': what.upper(),
             'url': base_url,
@@ -83,7 +127,7 @@ def safecall(base_url, req = None, headers = {}, what = "post"):
         }
         if what == 'post':
             req_kwargs['json'] = req
-            
+
         req_obj = requests.Request(**req_kwargs)
         try:
             prepared = SESSION.prepare_request(req_obj)
@@ -91,15 +135,8 @@ def safecall(base_url, req = None, headers = {}, what = "post"):
             SESSION = requests.Session()
             prepared = SESSION.prepare_request(req_obj)
 
-        if CURLIFY:
-            import curlify
-            print(curlify.to_curl(prepared), file=sys.stderr)
-
-        if DRY:
-            sys.exit(0)
-
         r = SESSION.send(prepared, stream=True, timeout=TIMEOUT)
-        r.raise_for_status()  
+        r.raise_for_status()
 
     except Exception as e:
         obj = {'request': req, 'response': {}}
@@ -409,7 +446,7 @@ def base_request(args, server):
     return req
 
 def main():
-    global SHUTUP, CURLIFY, VERSION, DRY, TIMEOUT, mcp_dict_ref 
+    global SHUTUP, CURLIFY, VERSION, DRY, TIMEOUT, FORCE, mcp_dict_ref 
 
     try:
         VERSION = importlib.metadata.version('llcat')
@@ -453,6 +490,7 @@ They can also have line numbers @/like/this:0 or jq syntax @/like/this:.[0].fiel
     parser.add_argument('-nt', '--no_think', action="store_true", help='disable thinking')
     parser.add_argument('-ns', '--no_stream',action="store_true", help='disable streaming')
     parser.add_argument('-nw', '--no_wrap',  action='store_true', help='do not wrap inputs in <xml-like-syntax>')
+    parser.add_argument('-f',  '--force',     action='store_true', help='disable SSL verification')
     parser.add_argument('--curlify',         action='store_true', help="write curl equivalents of calls to stdout")
     parser.add_argument('--dry',             action='store_true', help="dry run")
     parser.add_argument('--version',         action='version', version='%(prog)s ' + VERSION)
@@ -463,6 +501,10 @@ They can also have line numbers @/like/this:0 or jq syntax @/like/this:.[0].fiel
 
     if args.curlify:  CURLIFY = True
     if args.dry:      DRY = True
+    if args.force:
+        FORCE = True
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     if args.be_quiet: SHUTUP = set((','.join(args.be_quiet)).split(','))
     TIMEOUT = args.timeout
     base_url = None

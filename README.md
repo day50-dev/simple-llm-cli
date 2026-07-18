@@ -315,17 +315,15 @@ There's ways of doing the network transports with this script as well. All you n
 Now it's your turn. 
 
 ```shell
-usage: llcat [-h] [-su [@]SERVERURL] [-sk [@]SERVERKEY] [-to TIMEOUT]
-             [-pr PROTO] [-m [[@]MODEL]] [-s [@]SYSTEM] [-a ATTACH]
-             [-c CONVERSATION] [-cr CONVERSATIONRO] [-eb [@]EXTRABODY]
-             [-sc [@]SCHEMA] [-mf MCP_FILE] [-tp TOOL_PROGRAM]
-             [-tf TOOL_FILE] [-ps] [-bq BE_QUIET] [-nt] [-ns] [-nw]
-             [--curlify] [--dry] [--version] [--info [INFO]]
+usage: llcat [-h] [-su [@]SERVERURL] [-sk [@]SERVERKEY] [-to TIMEOUT] [-pr PROTO] 
+             [-m [[@]MODEL]] [-s [@]SYSTEM] [-a ATTACH] [-c CONVERSATION] [-cr CONVERSATIONRO] 
+             [-eb [@]EXTRABODY] [-sc [@]SCHEMA] [-mf MCP] [-tp TOOL_PROGRAM] [-tf TOOL_FILE]
+             [-ps] [-bq BE_QUIET] [-nt] [-ns] [-nw] [-f] [--curlify] [--dry] [--version] [--info [INFO]]
              [[@]user_prompt ...]
 
-llcat is /usr/bin/cat for LLMs. 
+llcat is /usr/bin/cat for LLMs.
 
-        🐱 Me-wow! 
+        🐱 Me-wow!
 
 https://github.com/day50-dev/llcat
 
@@ -338,8 +336,7 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   -su, -u, --server_url [@]SERVERURL
-                        server URL (e.g., http://::1:8080). Also supports MAS
-                        format
+                        server URL (e.g., http://::1:8080). Also supports MAS format
   -sk, -k, --server_key [@]SERVERKEY
                         server API key for authorization
   -to, --timeout TIMEOUT
@@ -355,12 +352,10 @@ options:
   -cr, --conversationro CONVERSATIONRO
                         the readonly conversation input (ro)
   -eb, --extra_body [@]EXTRABODY
-                        JSON to add to the body, such as max_tokens or
-                        temperature
+                        JSON to add to the body, such as max_tokens or temperature
   -sc, --schema [@]SCHEMA
                         set a schema to force structured output
-  -mf, --mcp MCP_FILE
-                        MCP file to use
+  -mf, --mcp MCP        MCP file to use
   -tp, --tool_program TOOL_PROGRAM
                         program to execute tool calls
   -tf, --tool_file TOOL_FILE
@@ -371,6 +366,7 @@ options:
   -nt, --no_think       disable thinking
   -ns, --no_stream      disable streaming
   -nw, --no_wrap        do not wrap inputs in <xml-like-syntax>
+  -f, --force           disable SSL verification
   --curlify             write curl equivalents of calls to stdout
   --dry                 dry run
   --version             show program's version number and exit
