@@ -359,7 +359,7 @@ options:
                         temperature
   -sc, --schema [@]SCHEMA
                         set a schema to force structured output
-  -mf, --mcp_file MCP_FILE
+  -mf, --mcp MCP_FILE
                         MCP file to use
   -tp, --tool_program TOOL_PROGRAM
                         program to execute tool calls

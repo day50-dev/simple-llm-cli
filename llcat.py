@@ -220,6 +220,7 @@ def mcp_get_def(path):
     for server_name, server_config in config.get('mcpServers').items():
         if server_config.get("disabled"):
             continue
+
         safe_name = re.sub(r'[^a-z0-9_]', '_', server_name.lower())
         counter = 0
         
@@ -443,7 +444,7 @@ They can also have line numbers @/like/this:0 or jq syntax @/like/this:.[0].fiel
 
     parser.add_argument('-eb', '--extra_body',  metavar='[@]EXTRABODY', default='{}', help='JSON to add to the body, such as max_tokens or temperature')
     parser.add_argument('-sc', '--schema',      metavar='[@]SCHEMA', help='set a schema to force structured output')
-    parser.add_argument('-mf', '--mcp_file',    help='MCP file to use')
+    parser.add_argument('-mf', '--mcp',    help='MCP file to use')
     parser.add_argument('-tp', '--tool_program', help='program to execute tool calls')
     parser.add_argument('-tf', '--tool_file',   help='JSON file with tool definitions')
 
@@ -551,9 +552,9 @@ They can also have line numbers @/like/this:0 or jq syntax @/like/this:.[0].fiel
             # we demand the tool program to be executable
             mcp_dict_ref[tool['function']['name']] = ({'command':args.tool_program,'args':[]}, tool['function']['name'])
 
-    if args.mcp_file:
+    if args.mcp:
         tools = tools or []
-        tools += mcp_get_def(args.mcp_file)
+        tools += mcp_get_def(args.mcp)
 
     # Attachment
     message_content = create_content_with_attachments(prompt, args.attach) if args.attach else prompt
