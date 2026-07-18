@@ -114,9 +114,19 @@ def safecall(base_url, req = None, headers = {}, what = "post"):
             class CurlResponse:
                 def __init__(self, proc):
                     self.proc = proc
+                    self._body = None
+                def _read(self):
+                    if self._body is None:
+                        self._body = self.proc.stdout.read()
+                    return self._body
                 def iter_lines(self):
                     for line in self.proc.stdout:
                         yield line.rstrip(b'\n')
+                @property
+                def text(self):
+                    return self._read().decode('utf-8', errors='replace')
+                def json(self):
+                    return json.loads(self._read())
 
             return CurlResponse(proc)
 
