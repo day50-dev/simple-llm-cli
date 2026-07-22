@@ -27,9 +27,11 @@ classifiers = [
 ]
 dependencies = [
     "requests",
-    "jq",
     "curlify"
 ]
+
+[project.optional-dependencies]
+jq = ["jq"]
 
 [project.urls]
 "Homepage" = "https://github.com/day50-dev/llcat"
