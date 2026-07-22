@@ -381,7 +381,11 @@ def stringfile(instr):
                 parts = instr[1:].split(':')
                 line = parts[-1]
                 if line[0] == '.':
-                    import jq
+                    try:
+                        import jq
+                    except Exception as ex:
+                        err_out('parsing', message=f"jq library is not installed", obj=traceback.format_exc())
+
                     isJq = True
 
                 file = Path(':'.join(parts[:-1])).expanduser()
